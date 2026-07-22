@@ -6,8 +6,24 @@ sources:
     schema: raw_retail
     tables:
       - name: daily_sales
+        columns:
+          - name: source_primary_key
+            tests: [not_null, unique]
+          - name: business_date
+            tests: [not_null]
+          - name: store_id
+            tests: [not_null]
+          - name: source_product_id
+            tests: [not_null]
       - name: inventory_snapshots
       - name: waste_events
       - name: product_master
+        columns:
+          - name: source_product_id
+            tests: [not_null]
+          - name: product_id
+            tests: [not_null]
+          - name: shelf_life_days
+            tests: [not_null]
       - name: promotions
       - name: scoring_outputs
