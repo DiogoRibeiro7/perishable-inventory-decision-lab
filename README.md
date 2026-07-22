@@ -159,7 +159,7 @@ See [`gcp/DEPLOYMENT_RUNBOOK.md`](gcp/DEPLOYMENT_RUNBOOK.md) for the deployment 
 
 ## Roadmap
 
-The detailed path from the current `0.1.0` release to a stable `1.0.0` decision-system release is maintained in [`docs/DELIVERY_ROADMAP.md`](docs/DELIVERY_ROADMAP.md). It defines planned versions, acceptance gates, migration notes, rollback paths, and release blockers.
+The detailed path from the current `0.1.0` release to a stable `1.0.0` decision-system release is maintained in [`ROADMAP.md`](ROADMAP.md). It defines planned versions, acceptance gates, migration notes, rollback paths, release blockers, and traceability back to the existing design documents.
 
 ## Current Limitations
 
