@@ -1,0 +1,41 @@
+{
+  "checks": [
+    {
+      "detail": "26 required paths present",
+      "name": "required_paths",
+      "status": "pass"
+    },
+    {
+      "detail": "4 cards match package version 0.1.0",
+      "name": "card_versions",
+      "status": "pass"
+    },
+    {
+      "detail": "local markdown links resolve",
+      "name": "markdown_links",
+      "status": "pass"
+    },
+    {
+      "detail": "no raw or processed data files are tracked",
+      "name": "tracked_data",
+      "status": "pass"
+    },
+    {
+      "detail": "tracked files are <= 5000000 bytes",
+      "name": "tracked_file_sizes",
+      "status": "pass"
+    },
+    {
+      "detail": "repository hygiene checks pass",
+      "name": "repository_hygiene",
+      "status": "pass"
+    }
+  ],
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.11"
+  },
+  "generated_at": "2026-07-22T12:39:51.261695+00:00",
+  "package_version": "0.1.0",
+  "status": "pass"
+}
