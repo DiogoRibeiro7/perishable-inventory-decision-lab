@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Probabilistic forecasting and perishable inventory decision system"
 authors = ["Diogo"]
 readme = "README.md"
+license = "Apache-2.0"
 packages = [
     { include = "perishable_lab", from = "src" },
     { include = "case_study" },
