@@ -2,6 +2,8 @@
 
 This repository is a Python project distributed with dependency metadata in `pyproject.toml` and `poetry.lock`.
 
+The project is distributed under the Apache License 2.0.
+
 Runtime dependencies:
 
 - NumPy
