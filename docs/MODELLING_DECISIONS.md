@@ -26,6 +26,8 @@ where `C_u` is the cost of underage and `C_o` is the cost of overage. The demo a
 
 A cohort simulator is used rather than a single inventory number. This allows the policy to be evaluated against expiry dynamics. The initial policy uses total observed stock; a stronger policy would use the age profile and optimise depletion-aware replenishment.
 
+The policy layer now exposes hard ordering constraints separately from the demand forecast: case packs, minimum order quantities, display minimums, and storage capacity can override a model-preferred order. An age-aware base-stock heuristic discounts units likely to expire before they can protect service.
+
 ## Inventory uncertainty
 
 The simulator maintains true physical stock but exposes a noisy observation to the policy. This separates demand uncertainty from state uncertainty and creates a path toward Bayesian stock estimation or a partially observable Markov decision process.

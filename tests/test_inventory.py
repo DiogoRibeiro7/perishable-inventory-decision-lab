@@ -1,6 +1,14 @@
 import pandas as pd
 
-from perishable_lab.inventory.policies import MedianPolicy, PolicyContext, QuantileBaseStockPolicy
+from perishable_lab.inventory.policies import (
+    AgeAwareBaseStockPolicy,
+    ConstrainedBaseStockPolicy,
+    MedianPolicy,
+    OrderingConstraints,
+    PolicyContext,
+    QuantileBaseStockPolicy,
+    critical_fractile,
+)
 from perishable_lab.inventory.simulator import SimulationControls, simulate_series
 
 
@@ -15,6 +23,48 @@ def test_policy_never_returns_negative_order() -> None:
     )
     assert MedianPolicy().order(context) == 0
     assert QuantileBaseStockPolicy().order(context) == 0
+
+
+def test_constrained_policy_applies_case_pack_minimum_and_capacity() -> None:
+    context = PolicyContext(
+        forecast_target=9.0,
+        forecast_median=5.0,
+        observed_inventory=1.0,
+        pipeline_inventory=0.0,
+        lead_time_days=1,
+        shelf_life_days=3,
+    )
+    policy = ConstrainedBaseStockPolicy(
+        constraints=OrderingConstraints(
+            case_pack=4,
+            minimum_order_quantity=4,
+            storage_capacity_units=7,
+        )
+    )
+
+    assert policy.order(context) == 4
+
+
+def test_age_aware_policy_discounts_expiring_inventory() -> None:
+    context = PolicyContext(
+        forecast_target=8.0,
+        forecast_median=5.0,
+        observed_inventory=8.0,
+        pipeline_inventory=0.0,
+        lead_time_days=1,
+        shelf_life_days=2,
+        expiring_inventory=4.0,
+    )
+
+    assert QuantileBaseStockPolicy().order(context) == 0
+    assert AgeAwareBaseStockPolicy().order(context) == 4
+
+
+def test_higher_underage_cost_increases_critical_fractile() -> None:
+    low_margin = critical_fractile(unit_margin=1.0, unit_cost=2.0, waste_cost=0.5)
+    high_margin = critical_fractile(unit_margin=4.0, unit_cost=2.0, waste_cost=0.5)
+
+    assert high_margin > low_margin
 
 
 def test_inventory_simulator_conserves_daily_demand() -> None:
