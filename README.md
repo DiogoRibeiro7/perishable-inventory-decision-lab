@@ -59,7 +59,7 @@ Citation metadata is included in [`CITATION.cff`](CITATION.cff) and Zenodo metad
 
 ## Community
 
-Participation in this repository is covered by the [Code of Conduct](CODE_OF_CONDUCT.md).
+Participation in this repository is covered by the [Code of Conduct](CODE_OF_CONDUCT.md). Contribution, support, and security guidance are available in [CONTRIBUTING.md](CONTRIBUTING.md), [SUPPORT.md](SUPPORT.md), and [SECURITY.md](SECURITY.md).
 
 ## Demo Outputs
 

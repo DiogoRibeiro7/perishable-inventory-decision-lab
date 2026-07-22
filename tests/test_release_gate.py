@@ -56,4 +56,8 @@ def test_release_package_docs_are_required() -> None:
     assert ".zenodo.json" in required
     assert "CITATION.cff" in required
     assert "CODE_OF_CONDUCT.md" in required
+    assert "CONTRIBUTING.md" in required
+    assert "SECURITY.md" in required
+    assert "SUPPORT.md" in required
+    assert ".github/pull_request_template.md" in required
     assert "reports/release/v0.1.0_commands.md" in required
