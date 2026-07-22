@@ -12,6 +12,7 @@ import yaml
 
 from perishable_lab.analysis import ProfileConfig, write_profile_report
 from perishable_lab.config import load_config
+from perishable_lab.data.public_retail import PublicBenchmarkConfig, run_public_retail_benchmark
 from perishable_lab.data.synthetic import SyntheticDataSpec, generate_daily_demand
 from perishable_lab.failures import DiagnosticMode, write_failure_analysis
 from perishable_lab.feature_store import (
@@ -292,6 +293,37 @@ def benchmark(
         budget_payload = yaml.safe_load(budget_path.read_text(encoding="utf-8"))
         assert_budget(report, PerformanceBudget(**budget_payload[workload]))
     typer.echo(json.dumps({"output_path": str(report_path), "dominant_bottleneck": report["dominant_bottleneck"]}, indent=2))
+
+
+@app.command("public-retail-benchmark")
+def public_retail_benchmark(
+    raw_dir: Annotated[
+        Path,
+        typer.Argument(help="Directory containing user-provided M5 CSV files."),
+    ],
+    output_dir: Annotated[
+        Path,
+        typer.Option(help="Directory in which public benchmark artifacts are written."),
+    ] = Path("artifacts/public-retail-benchmark"),
+    max_series: Annotated[int, typer.Option(min=1)] = 8,
+    minimum_train_days: Annotated[int, typer.Option(min=28)] = 56,
+    horizon_days: Annotated[int, typer.Option(min=1)] = 14,
+    step_days: Annotated[int, typer.Option(min=1)] = 14,
+    seed: Annotated[int, typer.Option()] = 42,
+) -> None:
+    """Run the public retail demand benchmark from user-provided files."""
+    outputs = run_public_retail_benchmark(
+        raw_dir,
+        output_dir,
+        PublicBenchmarkConfig(
+            max_series=max_series,
+            minimum_train_days=minimum_train_days,
+            horizon_days=horizon_days,
+            step_days=step_days,
+            seed=seed,
+        ),
+    )
+    typer.echo(json.dumps(outputs, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,5 @@
+window,model,metric,value,rows,scope
+0,seasonal_naive,pinball_loss_q50,1.25,16,ci_fixture_schema
+0,sba_intermittent,pinball_loss_q50,1.63,16,ci_fixture_schema
+0,quantile_boosting,pinball_loss_q50,1.12,16,ci_fixture_schema
+0,quantile_boosting,empirical_coverage,0.88,16,ci_fixture_schema

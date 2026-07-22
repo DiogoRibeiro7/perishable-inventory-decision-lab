@@ -1,0 +1,21 @@
+dataset: m5
+raw_dir: data/raw/m5
+output_dir: artifacts/public-retail-benchmark
+max_series: 8
+minimum_train_days: 56
+horizon_days: 14
+step_days: 14
+seed: 42
+required_files:
+  - calendar.csv
+  - sales_train_validation.csv
+  - sell_prices.csv
+simulated_fields:
+  - shelf_life_days
+  - lead_time_days
+  - unit_cost
+  - unit_margin
+  - waste_cost
+  - shrinkage_rate
+  - record_error_std
+checksum_policy: optional_sha256_per_file
