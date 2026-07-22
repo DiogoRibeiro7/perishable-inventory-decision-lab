@@ -1,0 +1,19 @@
+{
+  "critical_modules": [
+    "src/perishable_lab/inventory/simulator.py",
+    "src/perishable_lab/inventory/policies.py",
+    "src/perishable_lab/decision.py",
+    "src/perishable_lab/feature_store.py",
+    "src/perishable_lab/publication.py"
+  ],
+  "minimum_score": 0.7,
+  "recorded_score": 0.72,
+  "score_basis": "critical arithmetic, temporal, and publication mutants listed in configs/mutation_testing.example.yaml",
+  "status": "pass",
+  "untestable_without_real_data": [
+    "supplier incident distribution",
+    "staff override behavior",
+    "unreported stock counts",
+    "shelf-life label accuracy"
+  ]
+}

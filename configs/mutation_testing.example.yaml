@@ -1,0 +1,12 @@
+target_modules:
+  - src/perishable_lab/inventory/simulator.py
+  - src/perishable_lab/inventory/policies.py
+  - src/perishable_lab/decision.py
+  - src/perishable_lab/feature_store.py
+  - src/perishable_lab/publication.py
+test_command: poetry run pytest tests/test_inventory.py tests/test_decision.py tests/test_feature_store.py tests/test_publication.py tests/test_properties.py
+minimum_score: 0.70
+timeout_seconds: 900
+excluded_mutations:
+  - logging-only changes
+  - representation-only changes

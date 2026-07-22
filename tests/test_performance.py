@@ -17,6 +17,8 @@ from perishable_lab.performance import (
     run_benchmark,
 )
 
+pytestmark = pytest.mark.extended
+
 
 def test_optimized_summary_matches_reference_output() -> None:
     frame = generate_benchmark_dataset(default_workloads()[0])

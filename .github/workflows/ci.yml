@@ -28,8 +28,10 @@ jobs:
         run: poetry run ruff check .
       - name: Type-check
         run: poetry run mypy src
-      - name: Test
-        run: poetry run pytest
+      - name: Fast tests
+        run: poetry run pytest -m "not extended"
+      - name: Extended tests
+        run: poetry run pytest -m extended
       - name: Small benchmark
         run: poetry run perishable-lab benchmark --workload small --output-dir artifacts/benchmark-ci --fail-on-budget
 

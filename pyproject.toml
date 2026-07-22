@@ -50,6 +50,20 @@ packages = ["perishable_lab"]
 [tool.pytest.ini_options]
 addopts = "-q --cov=perishable_lab --cov-report=term-missing"
 testpaths = ["tests"]
+markers = [
+    "extended: slower assurance checks such as local benchmarks and larger fixtures",
+]
+
+[tool.mutmut]
+paths_to_mutate = [
+    "src/perishable_lab/inventory/simulator.py",
+    "src/perishable_lab/inventory/policies.py",
+    "src/perishable_lab/decision.py",
+    "src/perishable_lab/feature_store.py",
+    "src/perishable_lab/publication.py",
+]
+runner = "poetry run pytest tests/test_inventory.py tests/test_decision.py tests/test_feature_store.py tests/test_publication.py tests/test_properties.py"
+tests_dir = "tests"
 
 [[tool.mypy.overrides]]
 module = ["sklearn.*"]

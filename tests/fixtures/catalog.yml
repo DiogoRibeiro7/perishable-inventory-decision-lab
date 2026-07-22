@@ -1,0 +1,16 @@
+fixtures:
+  - name: golden_simulation_expected
+    path: tests/fixtures/golden_simulation_expected.csv
+    target_failure: inventory event ordering, expiry handling, and cost drift
+  - name: generated_inventory_seeds
+    path: tests/test_properties.py
+    target_failure: negative quantities, demand accounting drift, and non-repeatable replay
+  - name: point_in_time_examples
+    path: tests/test_feature_store.py
+    target_failure: late records, daylight-saving boundaries, duplicate versions, and cutoff equality
+  - name: publication_faults
+    path: tests/test_publication.py
+    target_failure: partial publication, stale versions, corrupted artifacts, and rollback
+  - name: performance_small_workload
+    path: tests/test_performance.py
+    target_failure: optimisation parity, chunk row loss, nondeterministic parallel work, and budget drift
