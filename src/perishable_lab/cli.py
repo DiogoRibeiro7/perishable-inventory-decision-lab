@@ -19,6 +19,12 @@ from perishable_lab.feature_store import (
     write_training_snapshot_manifest,
 )
 from perishable_lab.pipelines.demo import run_demo
+from perishable_lab.publication import (
+    BatchRequest,
+    LocalRecommendationStore,
+    ValidationConfig,
+    validate_recommendation_batch,
+)
 
 app = typer.Typer(
     name="perishable-lab",
@@ -166,6 +172,62 @@ def snapshot_features(
         output_path,
     )
     typer.echo(json.dumps(manifest, indent=2, sort_keys=True))
+
+
+@app.command("publish-recommendations")
+def publish_recommendations(
+    input_path: Annotated[
+        Path,
+        typer.Argument(help="CSV file containing a complete recommendation batch."),
+    ],
+    store_path: Annotated[
+        Path,
+        typer.Option(help="Local publication store directory."),
+    ] = Path("artifacts/publication"),
+    retailer_id: Annotated[str, typer.Option()] = "demo-retailer",
+    business_date: Annotated[str, typer.Option()] = "2026-01-01",
+    config_hash: Annotated[str, typer.Option()] = "local-config",
+    data_version: Annotated[str, typer.Option()] = "local-data",
+    model_version: Annotated[str, typer.Option()] = "model-v1",
+    policy_version: Annotated[str, typer.Option()] = "policy-v1",
+    expected_rows: Annotated[int, typer.Option(min=1)] = 1,
+    expected_unit: Annotated[str, typer.Option()] = "unit",
+    now: Annotated[str, typer.Option()] = "2026-01-01T12:00:00Z",
+) -> None:
+    """Validate, stage, and atomically publish a local recommendation batch."""
+    frame = pd.read_csv(input_path)
+    request = BatchRequest(
+        retailer_id=retailer_id,
+        business_date=business_date,
+        config_hash=config_hash,
+        data_version=data_version,
+        model_version=model_version,
+        policy_version=policy_version,
+    )
+    report = validate_recommendation_batch(
+        frame,
+        request,
+        ValidationConfig(expected_rows=expected_rows, expected_unit=expected_unit, now=now),
+    )
+    if report.status != "pass":
+        typer.echo(json.dumps({"status": "fail", "issues": [issue.__dict__ for issue in report.issues]}, indent=2))
+        raise typer.Exit(1)
+    store = LocalRecommendationStore(store_path)
+    manifest = store.stage_batch(frame, request, report)
+    pointer = store.publish_batch(manifest.batch_id)
+    typer.echo(json.dumps({"status": "published", "batch_id": pointer.active_batch_id, "generation": pointer.generation}, indent=2))
+
+
+@app.command("rollback-recommendations")
+def rollback_recommendations(
+    store_path: Annotated[
+        Path,
+        typer.Option(help="Local publication store directory."),
+    ] = Path("artifacts/publication"),
+) -> None:
+    """Roll back local recommendations to the previous valid batch."""
+    pointer = LocalRecommendationStore(store_path).rollback()
+    typer.echo(json.dumps({"status": "rolled_back", "batch_id": pointer.active_batch_id, "generation": pointer.generation}, indent=2))
 
 
 if __name__ == "__main__":
