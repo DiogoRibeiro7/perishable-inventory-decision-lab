@@ -1,0 +1,82 @@
+[
+  {
+    "id": "Q01",
+    "front": "Why are point forecasts insufficient for fresh-food ordering?",
+    "back": "Orders depend on asymmetric costs, shelf life, lead time, stock state, and constraints; use distributional decision inputs."
+  },
+  {
+    "id": "Q02",
+    "front": "Why is pinball loss proper for quantiles?",
+    "back": "Its expected subgradient is P(Y <= f) - q, so it is minimized at the q quantile."
+  },
+  {
+    "id": "Q04",
+    "front": "What does conformal calibration do here?",
+    "back": "It expands forecast intervals using calibration residuals from a separated period."
+  },
+  {
+    "id": "Q07",
+    "front": "Why is censored demand dangerous?",
+    "back": "Observed sales during stockout understate latent demand, causing forecasts to learn availability."
+  },
+  {
+    "id": "Q09",
+    "front": "Can daily quantiles be added over lead time?",
+    "back": "No. Cumulative quantiles depend on temporal dependence; use scenario paths or cumulative distributions."
+  },
+  {
+    "id": "Q10",
+    "front": "What is the newsvendor critical fractile?",
+    "back": "Cu / (Cu + Co), where Cu is underage cost and Co is overage cost."
+  },
+  {
+    "id": "Q13",
+    "front": "Which simulator invariants matter most?",
+    "back": "Demand conservation, non-negative stock and orders, supplier fill bounded by order, deterministic replay."
+  },
+  {
+    "id": "Q18",
+    "front": "What does lack of overlap imply for offline policy evaluation?",
+    "back": "A confident point estimate is not identifiable; report diagnostics or bounds."
+  },
+  {
+    "id": "Q22",
+    "front": "How does the project prevent partial publication?",
+    "back": "Validate and stage immutable batches, then atomically swap the active pointer."
+  },
+  {
+    "id": "Q30",
+    "front": "What security separation matters most?",
+    "back": "Separate data read, training, approval, publication, override, and audit roles."
+  },
+  {
+    "id": "Q35",
+    "front": "What is the biggest unproven claim?",
+    "back": "Real retailer impact is not proven; current evidence is synthetic and structural."
+  },
+  {
+    "id": "Q45",
+    "front": "Why separate model, policy, simulator, and system cards?",
+    "back": "They have different assumptions, evidence, limitations, and failure modes."
+  },
+  {
+    "id": "Q61",
+    "front": "Can q90 day one plus q90 day two produce two-day q90?",
+    "back": "No. Quantiles do not add without a dependence assumption."
+  },
+  {
+    "id": "Q62",
+    "front": "Does a promotion feature prove causal uplift?",
+    "back": "No. Causal uplift requires a separate design that handles confounding."
+  },
+  {
+    "id": "Q68",
+    "front": "If fixed service level wins synthetic cost, should it be rolled out?",
+    "back": "No. Synthetic results are scenario evidence, not field impact."
+  },
+  {
+    "id": "Q73",
+    "front": "Can staff overrides be treated as labels of model error?",
+    "back": "Not directly; they reflect workflow, trust, local context, and missing data."
+  }
+]
