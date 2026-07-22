@@ -1,0 +1,74 @@
+name: Bug report
+description: Report behavior that is broken, incorrect, or inconsistent with the documented contract.
+title: "fix: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for reproducible defects in package code, CLI workflows, tests, or committed examples.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What is wrong, and what should happen instead?
+      placeholder: The demo command fails when...
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Include commands, input paths, seed values, and environment details.
+      placeholder: |
+        1. Run `poetry install`
+        2. Run `poetry run perishable-lab demo ...`
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+      description: Paste the shortest useful error output or metric mismatch.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: Link to the documented behavior when possible.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Data contracts
+        - Forecasting
+        - Inventory simulation
+        - Ordering policy
+        - Monitoring
+        - Deployment example
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: v0.1.0-archive.3 or commit SHA
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submit checks
+      options:
+        - label: I searched existing issues.
+          required: true
+        - label: I included a reproducible command or a minimal input description.
+          required: true
