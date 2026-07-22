@@ -28,6 +28,8 @@ jobs:
         run: poetry run ruff check .
       - name: Type-check
         run: poetry run mypy src
+      - name: Repository hygiene
+        run: poetry run python scripts/repo_hygiene.py
       - name: Fast tests
         run: poetry run pytest -m "not extended"
       - name: Extended tests

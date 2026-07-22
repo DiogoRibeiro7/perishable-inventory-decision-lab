@@ -1,4 +1,4 @@
-.PHONY: install demo test lint typecheck quality clean
+.PHONY: install demo test lint typecheck hygiene quality clean
 
 install:
 	poetry install
@@ -15,7 +15,10 @@ lint:
 typecheck:
 	poetry run mypy src
 
-quality: lint typecheck test
+hygiene:
+	poetry run python scripts/repo_hygiene.py
+
+quality: lint typecheck hygiene test
 
 clean:
 	rm -rf artifacts .coverage .pytest_cache .mypy_cache .ruff_cache
