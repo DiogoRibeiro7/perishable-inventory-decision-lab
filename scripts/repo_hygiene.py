@@ -131,7 +131,6 @@ def default_rules() -> tuple[HygieneRule, ...]:
             "excluded_public_wording",
             re.compile(excluded_terms, re.IGNORECASE),
             "Excluded public wording should not appear in tracked text.",
-            allow_paths=("A" + "GENTS.md",),
         ),
     )
 
