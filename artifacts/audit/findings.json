@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-07-22",
+  "repository": "perishable-inventory-decision-lab",
+  "status": "not_ready_for_live_publication",
+  "findings": [
+    {
+      "id": "AUD-001",
+      "severity": "blocker",
+      "title": "Sales are still used as demand under stockout conditions",
+      "status": "open",
+      "affected_files": [
+        "src/perishable_lab/data/canonical.py",
+        "src/perishable_lab/features.py",
+        "docs/READINESS_REVIEW.md"
+      ],
+      "failure_mode": "Observed sales during empty-shelf periods can be learned as true demand.",
+      "required_test": "Create a zero-sale, zero-stock row and assert canonical output marks censored demand and downstream training can exclude or adjust it.",
+      "acceptance_gate": "Canonical rows include is_censored_demand and forecast metrics report censored-row rate."
+    },
+    {
+      "id": "AUD-002",
+      "severity": "high",
+      "title": "Calibration is global rather than segment-aware",
+      "status": "open",
+      "affected_files": [
+        "src/perishable_lab/forecasting/conformal.py",
+        "src/perishable_lab/forecasting/metrics.py",
+        "src/perishable_lab/monitoring/quality.py",
+        "tests/test_conformal.py",
+        "tests/test_monitoring.py"
+      ],
+      "failure_mode": "Aggregate coverage can pass while priority store, product, promotion, or shelf-life segments under-cover.",
+      "required_test": "Build two demand segments with different error distributions and assert segment coverage and alerts are reported separately.",
+      "acceptance_gate": "Monitoring fails when any priority segment coverage is below the configured floor."
+    },
+    {
+      "id": "AUD-003",
+      "severity": "high",
+      "title": "Product and store encodings can drift between training and scoring",
+      "status": "open",
+      "affected_files": [
+        "src/perishable_lab/features.py",
+        "src/perishable_lab/forecasting/quantile.py",
+        "tests/test_features.py",
+        "tests/test_forecasting_horizon.py"
+      ],
+      "failure_mode": "Category codes are recomputed per frame and can map the same product or store to different values later.",
+      "required_test": "Compare encodings for a full training frame and a filtered scoring frame.",
+      "acceptance_gate": "Model artifacts persist vocabularies and scoring uses stable mappings plus an unknown category."
+    },
+    {
+      "id": "AUD-004",
+      "severity": "high",
+      "title": "Simulator event order is fixed but business-critical",
+      "status": "open",
+      "affected_files": [
+        "src/perishable_lab/inventory/simulator.py",
+        "tests/test_inventory.py",
+        "docs/MODELLING_DECISIONS.md"
+      ],
+      "failure_mode": "Expiry, receiving, shrinkage, sales, and ordering sequence can change fill and waste metrics materially.",
+      "required_test": "Use one-day shelf-life fixtures to assert expected outcomes under each supported event-order mode.",
+      "acceptance_gate": "Simulator supports named event-order modes and records the selected mode in outputs."
+    },
+    {
+      "id": "AUD-005",
+      "severity": "high",
+      "title": "Policy promotion does not enforce service floors",
+      "status": "open",
+      "affected_files": [
+        "src/perishable_lab/evaluation/reporting.py",
+        "reports/example_results.md",
+        "tests/test_monitoring.py"
+      ],
+      "failure_mode": "A lower-cost policy can be favored even when it violates required availability for a priority segment.",
+      "required_test": "Create policy metrics where the cheapest policy violates the fill-rate floor and assert it is rejected.",
+      "acceptance_gate": "Policy ranking minimizes cost subject to global and segment-level service floors."
+    },
+    {
+      "id": "AUD-006",
+      "severity": "medium",
+      "title": "Cloud workflow is not verified end to end",
+      "status": "open",
+      "affected_files": [
+        "gcp/cloudbuild.yaml",
+        "gcp/DEPLOYMENT_RUNBOOK.md",
+        "airflow/dags/perishable_decision_pipeline.py",
+        "src/perishable_lab/deployment/gcp.py",
+        "tests/test_deployment.py"
+      ],
+      "failure_mode": "Local helper tests can pass while cloud IAM, job execution, or partition publication fails.",
+      "required_test": "Run dry-run publication against fake or sandbox clients and assert execution order.",
+      "acceptance_gate": "CI or optional integration checks validate dbt, DAG import, and publication flow."
+    },
+    {
+      "id": "AUD-007",
+      "severity": "medium",
+      "title": "dbt models lack fixture-backed validation in CI",
+      "status": "open",
+      "affected_files": [
+        "dbt_project/models",
+        "dbt_project/packages.yml",
+        ".github/workflows/ci.yml"
+      ],
+      "failure_mode": "Warehouse SQL can break without failing the current Python-only CI checks.",
+      "required_test": "Run dbt parse and a fixture-backed build or SQL compilation check in CI.",
+      "acceptance_gate": "CI includes dbt validation for staging, intermediate, and mart models."
+    }
+  ]
+}
