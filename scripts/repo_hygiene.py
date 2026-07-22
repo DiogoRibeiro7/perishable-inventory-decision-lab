@@ -11,6 +11,10 @@ from pathlib import Path
 DEFAULT_PATHS = (
     Path("README.md"),
     Path("CITATION.cff"),
+    Path("CODE_OF_CONDUCT.md"),
+    Path("CONTRIBUTING.md"),
+    Path("SECURITY.md"),
+    Path("SUPPORT.md"),
     Path("VALIDATION.md"),
     Path("Makefile"),
     Path(".zenodo.json"),
