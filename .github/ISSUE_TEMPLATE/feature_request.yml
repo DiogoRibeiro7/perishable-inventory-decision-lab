@@ -1,0 +1,65 @@
+name: Feature request
+description: Propose a scoped improvement to the forecasting, inventory, monitoring, or deployment workflow.
+title: "feat: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What workflow, metric, or decision would this improve?
+      placeholder: The current workflow does not...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Describe the smallest useful change.
+      placeholder: Add a CLI option that...
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Data contracts
+        - Forecasting
+        - Inventory simulation
+        - Ordering policy
+        - Evaluation
+        - Monitoring
+        - Deployment example
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence or references
+      description: Link related files, metrics, tests, docs, or external references.
+    validations:
+      required: false
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List observable outcomes that would make this complete.
+      placeholder: |
+        - A test covers...
+        - Documentation explains...
+        - The CLI outputs...
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope checks
+      options:
+        - label: This request does not rely on private data.
+          required: true
+        - label: This request does not claim retailer outcome impact without evidence.
+          required: true

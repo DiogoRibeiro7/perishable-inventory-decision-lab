@@ -1,9 +1,9 @@
 # Perishable Inventory Decision Lab
 
 [![CI](https://github.com/DiogoRibeiro7/perishable-inventory-decision-lab/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/DiogoRibeiro7/perishable-inventory-decision-lab/actions/workflows/ci.yml)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21494128.svg)](https://doi.org/10.5281/zenodo.21494128)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21494115.svg)](https://doi.org/10.5281/zenodo.21494115)
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-3776ab.svg)](pyproject.toml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/DiogoRibeiro7/perishable-inventory-decision-lab?include_prereleases&sort=semver)](https://github.com/DiogoRibeiro7/perishable-inventory-decision-lab/releases)
 
 A production-oriented Python project for **probabilistic demand forecasting, perishable inventory simulation, and replenishment policy evaluation**.
@@ -55,7 +55,11 @@ The demo is deterministic for a fixed seed and runs end to end without cloud cre
 
 ## Citation
 
-Citation metadata is included in [`CITATION.cff`](CITATION.cff) and Zenodo metadata is included in [`.zenodo.json`](.zenodo.json). Archived release DOI: [`10.5281/zenodo.21494128`](https://doi.org/10.5281/zenodo.21494128).
+Citation metadata is included in [`CITATION.cff`](CITATION.cff) and Zenodo metadata is included in [`.zenodo.json`](.zenodo.json). Cite all versions with DOI [`10.5281/zenodo.21494115`](https://doi.org/10.5281/zenodo.21494115).
+
+## Community
+
+Participation in this repository is covered by the [Code of Conduct](CODE_OF_CONDUCT.md). Contribution, support, and security guidance are available in [CONTRIBUTING.md](CONTRIBUTING.md), [SUPPORT.md](SUPPORT.md), and [SECURITY.md](SECURITY.md).
 
 ## Demo Outputs
 
