@@ -23,3 +23,23 @@ models:
         tests: [not_null]
       - name: recommended_order_quantity
         tests: [not_null]
+
+  - name: stg_product_identity_mappings
+    description: Validated slowly changing product-identity mappings.
+    columns:
+      - name: raw_item_id
+        tests: [not_null]
+      - name: demand_entity_id
+        tests: [not_null]
+      - name: known_at
+        tests: [not_null]
+
+  - name: dim_product_identity
+    description: Accepted, rejected, and review-pending product identity history for as-of lookup.
+    columns:
+      - name: raw_item_id
+        tests: [not_null]
+      - name: canonical_product_id
+        tests: [not_null]
+      - name: demand_entity_id
+        tests: [not_null]

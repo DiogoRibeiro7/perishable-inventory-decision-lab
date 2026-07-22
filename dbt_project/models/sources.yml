@@ -25,5 +25,13 @@ sources:
             tests: [not_null]
           - name: shelf_life_days
             tests: [not_null]
+      - name: product_identity_mappings
+        columns:
+          - name: raw_item_id
+            tests: [not_null]
+          - name: demand_entity_id
+            tests: [not_null]
+          - name: known_at
+            tests: [not_null]
       - name: promotions
       - name: scoring_outputs

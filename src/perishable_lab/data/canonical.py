@@ -134,6 +134,7 @@ def _aggregate_sales(sales: pd.DataFrame, product_master: pd.DataFrame) -> pd.Da
         .agg(
             demand=("quantity", "sum"),
             observed_sales=("quantity", "sum"),
+            source_product_ids=("source_product_id", lambda values: "|".join(sorted(set(map(str, values))))),
             shelf_life_days=("shelf_life_days", "first"),
             lead_time_days=("lead_time_days", "first"),
             unit_cost=("unit_cost", "first"),
