@@ -23,10 +23,15 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 REQUIRED_PATHS = (
     Path("README.md"),
     Path("CITATION.cff"),
+    Path("CODE_OF_CONDUCT.md"),
+    Path("CONTRIBUTING.md"),
     Path("LICENSE"),
     Path("pyproject.toml"),
     Path(".zenodo.json"),
+    Path("SECURITY.md"),
+    Path("SUPPORT.md"),
     Path("Dockerfile"),
+    Path(".github/pull_request_template.md"),
     Path(".github/workflows/ci.yml"),
     Path("airflow/dags/perishable_decision_pipeline.py"),
     Path("dbt_project/models/schema.yml"),
@@ -61,6 +66,10 @@ CARD_PATHS = (
 
 MARKDOWN_PATHS = (
     Path("README.md"),
+    Path("CODE_OF_CONDUCT.md"),
+    Path("CONTRIBUTING.md"),
+    Path("SECURITY.md"),
+    Path("SUPPORT.md"),
     Path("VALIDATION.md"),
     Path("docs"),
     Path("reports"),
