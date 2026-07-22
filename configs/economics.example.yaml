@@ -1,0 +1,19 @@
+parameters:
+  - name: gross_margin
+    value: 1.2
+    lower: 0.9
+    upper: 1.5
+    unit: EUR_per_unit
+    currency: EUR
+    owner: finance
+    source: estimated
+    effective_from: 2026-01-01
+  - name: substitution_probability
+    value: 0.2
+    lower: 0.1
+    upper: 0.35
+    unit: unit_probability
+    currency:
+    owner: customer-success
+    source: elicited
+    effective_from: 2026-01-01
