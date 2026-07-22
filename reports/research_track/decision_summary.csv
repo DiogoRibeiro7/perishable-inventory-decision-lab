@@ -1,0 +1,3 @@
+model,decision,reason
+negative_binomial_quantile,reject_for_now,requires paired operating-cost improvement before deployment
+residual_scenario_ensemble,reject_for_now,requires paired operating-cost improvement before deployment

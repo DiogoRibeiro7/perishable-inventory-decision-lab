@@ -21,6 +21,7 @@ from perishable_lab.feature_store import (
     source_partition_manifest,
     write_training_snapshot_manifest,
 )
+from perishable_lab.forecasting.research import ResearchExperimentConfig, run_research_comparison
 from perishable_lab.performance import (
     PerformanceBudget,
     assert_budget,
@@ -324,6 +325,38 @@ def public_retail_benchmark(
         ),
     )
     typer.echo(json.dumps(outputs, indent=2, sort_keys=True))
+
+
+@app.command("research-comparison")
+def research_comparison(
+    input_path: Annotated[
+        Path,
+        typer.Argument(help="CSV file containing canonical daily demand rows."),
+    ],
+    output_dir: Annotated[
+        Path,
+        typer.Option(help="Directory in which research comparison artifacts are written."),
+    ] = Path("artifacts/research-comparison"),
+    seed: Annotated[int, typer.Option()] = 42,
+    bootstrap_blocks: Annotated[int, typer.Option(min=20)] = 200,
+) -> None:
+    """Compare baseline and research-track probabilistic forecasters."""
+    frame = pd.read_csv(input_path)
+    outputs = run_research_comparison(
+        frame,
+        output_dir,
+        ResearchExperimentConfig(seed=seed, bootstrap_blocks=bootstrap_blocks),
+    )
+    typer.echo(
+        json.dumps(
+            {
+                "output_dir": str(output_dir),
+                "experiment_id": outputs["manifest"]["experiment_id"],
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
 
 
 if __name__ == "__main__":

@@ -1,0 +1,23 @@
+seed: 42
+quantiles: [0.1, 0.5, 0.9]
+service_quantile: 0.9
+bootstrap_blocks: 200
+minimum_operational_improvement: 0.02
+baseline_model: quantile_boosting_baseline
+selected_models:
+  - negative_binomial_quantile
+  - residual_scenario_ensemble
+deferred_models:
+  - deep_global_temporal_model
+  - bayesian_hierarchical_count
+acceptance_gate:
+  forecast_metrics:
+    - pinball_loss
+    - empirical_coverage
+    - mean_interval_width
+    - approximate_crps
+  operational_metrics:
+    - proxy_cost
+    - lost_sales_units
+    - waste_units
+  required_decision: keep_for_shadow_test
