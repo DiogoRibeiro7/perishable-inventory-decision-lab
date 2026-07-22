@@ -10,8 +10,10 @@ from pathlib import Path
 
 DEFAULT_PATHS = (
     Path("README.md"),
+    Path("CITATION.cff"),
     Path("VALIDATION.md"),
     Path("Makefile"),
+    Path(".zenodo.json"),
     Path("pyproject.toml"),
     Path(".github"),
     Path("configs"),
@@ -34,6 +36,7 @@ SKIP_DIRS = {
 TEXT_SUFFIXES = {
     "",
     ".cfg",
+    ".cff",
     ".csv",
     ".ini",
     ".json",

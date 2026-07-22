@@ -47,6 +47,10 @@ poetry run pytest
 
 The demo is deterministic for a fixed seed and runs end to end without cloud credentials.
 
+## Citation
+
+Citation metadata is included in [`CITATION.cff`](CITATION.cff) and Zenodo metadata is included in [`.zenodo.json`](.zenodo.json). After Zenodo issues a DOI, update those files and this section with the final DOI.
+
 ## Demo Outputs
 
 ```text

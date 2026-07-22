@@ -1,0 +1,37 @@
+{
+  "title": "Perishable Inventory Decision Lab",
+  "upload_type": "software",
+  "description": "A reproducible Python software release for probabilistic demand forecasting, FIFO perishable inventory simulation, and replenishment policy evaluation. The project uses synthetic data for deterministic review examples and does not claim retailer outcome impact.",
+  "creators": [
+    {
+      "name": "Ribeiro, Diogo",
+      "orcid": "0009-0001-2022-7072",
+      "affiliation": "School of Media Arts and Design, Polytechnic Institute of Porto",
+      "type": "ProjectMember"
+    }
+  ],
+  "version": "0.1.0",
+  "publication_date": "2026-07-22",
+  "access_right": "open",
+  "license": "mit",
+  "language": "eng",
+  "keywords": [
+    "probabilistic forecasting",
+    "inventory optimization",
+    "perishable inventory",
+    "fresh food",
+    "operations research",
+    "retail analytics",
+    "supply chain",
+    "simulation",
+    "Python"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/DiogoRibeiro7/perishable-inventory-decision-lab",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    }
+  ],
+  "notes": "Contact: dfr@esmad.ipp.pt"
+}

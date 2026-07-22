@@ -22,8 +22,10 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_PATHS = (
     Path("README.md"),
+    Path("CITATION.cff"),
     Path("LICENSE"),
     Path("pyproject.toml"),
+    Path(".zenodo.json"),
     Path("Dockerfile"),
     Path(".github/workflows/ci.yml"),
     Path("airflow/dags/perishable_decision_pipeline.py"),
@@ -42,6 +44,7 @@ REQUIRED_PATHS = (
     Path("docs/ROLE_ALIGNMENT_MATRIX.md"),
     Path("docs/RETAIL_ADAPTATION_30_60_90.md"),
     Path("docs/THIRD_PARTY_NOTICES.md"),
+    Path("docs/ZENODO_PUBLISHING.md"),
     Path("reports/example_results.md"),
     Path("reports/example_run/forecast_metrics.json"),
     Path("reports/example_run/policy_metrics.csv"),
