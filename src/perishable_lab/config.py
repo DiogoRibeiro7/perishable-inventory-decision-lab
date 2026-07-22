@@ -72,6 +72,15 @@ class DemandCensoringConfig(BaseModel):
     tolerance: float = Field(default=1e-3, gt=0.0)
 
 
+class HierarchyForecastConfig(BaseModel):
+    """Configuration for cold-start and hierarchy-aware fallback forecasting."""
+
+    min_store_product_history: int = Field(default=14, ge=1)
+    min_parent_history: int = Field(default=30, ge=1)
+    recent_history_days: int = Field(default=28, ge=1)
+    prior_strength: float = Field(default=20.0, ge=0.0)
+
+
 class AppConfig(BaseModel):
     """Complete application configuration."""
 
@@ -80,6 +89,7 @@ class AppConfig(BaseModel):
     inventory: InventoryConfig = InventoryConfig()
     monitoring: MonitoringConfig = MonitoringConfig()
     demand_censoring: DemandCensoringConfig = DemandCensoringConfig()
+    hierarchy: HierarchyForecastConfig = HierarchyForecastConfig()
 
 
 def load_config(path: Path) -> AppConfig:
