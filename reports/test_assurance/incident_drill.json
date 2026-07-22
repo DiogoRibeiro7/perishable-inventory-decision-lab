@@ -1,0 +1,9 @@
+{
+  "drill": "stale_sales_data",
+  "run_id": "drill-2026-01-05",
+  "status": "pass",
+  "alert": "stale_sales_data",
+  "fallback": "hold_publication",
+  "log_replay": "chain_valid",
+  "operator_outcome": "publication held before store-facing files changed"
+}

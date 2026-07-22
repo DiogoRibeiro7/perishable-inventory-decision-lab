@@ -1,0 +1,39 @@
+rules:
+  - alert_id: stale_sales_data
+    layer: data
+    metric: sales_freshness_hours
+    severity: page
+    owner: data-oncall
+    threshold: 6.0
+    direction: above
+    minimum_sample: 100
+    deduplication_key: retailer:business_date:data
+    context_links: [dashboard:data_freshness, runbook:stale_sales_data]
+    safe_fallback: hold_publication
+    closure_condition: sales freshness returns below six hours for the affected date
+  - alert_id: broken_product_mapping
+    layer: data
+    metric: mapping_failure_rate
+    severity: critical
+    owner: data-oncall
+    threshold: 0.02
+    direction: above
+    minimum_sample: 100
+    deduplication_key: retailer:business_date:mapping
+    context_links: [dashboard:identity, runbook:broken_product_mapping]
+    safe_fallback: safe_incumbent_policy
+    closure_condition: mapping failures fall below two percent and identity diff is approved
+    automatic_rollback: true
+  - alert_id: partial_warehouse_write
+    layer: system
+    metric: partition_completeness_rate
+    severity: critical
+    owner: platform-oncall
+    threshold: 1.0
+    direction: below
+    minimum_sample: 1
+    deduplication_key: retailer:business_date:publication
+    context_links: [dashboard:publication, runbook:partial_warehouse_write]
+    safe_fallback: previous_valid_batch
+    closure_condition: all expected partitions are written and active pointer is unchanged
+    automatic_rollback: true
