@@ -22,7 +22,7 @@ Do not use public issues for security-sensitive reports. Follow [`SECURITY.md`](
 
 Use the Zenodo record for citation metadata:
 
-https://doi.org/10.5281/zenodo.21494128
+https://doi.org/10.5281/zenodo.21494115
 
 ## Contact
 

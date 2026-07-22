@@ -1,7 +1,7 @@
 # Perishable Inventory Decision Lab
 
 [![CI](https://github.com/DiogoRibeiro7/perishable-inventory-decision-lab/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/DiogoRibeiro7/perishable-inventory-decision-lab/actions/workflows/ci.yml)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21494128.svg)](https://doi.org/10.5281/zenodo.21494128)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21494115.svg)](https://doi.org/10.5281/zenodo.21494115)
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-3776ab.svg)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/DiogoRibeiro7/perishable-inventory-decision-lab?include_prereleases&sort=semver)](https://github.com/DiogoRibeiro7/perishable-inventory-decision-lab/releases)
@@ -55,7 +55,7 @@ The demo is deterministic for a fixed seed and runs end to end without cloud cre
 
 ## Citation
 
-Citation metadata is included in [`CITATION.cff`](CITATION.cff) and Zenodo metadata is included in [`.zenodo.json`](.zenodo.json). Archived release DOI: [`10.5281/zenodo.21494128`](https://doi.org/10.5281/zenodo.21494128).
+Citation metadata is included in [`CITATION.cff`](CITATION.cff) and Zenodo metadata is included in [`.zenodo.json`](.zenodo.json). Cite all versions with DOI [`10.5281/zenodo.21494115`](https://doi.org/10.5281/zenodo.21494115).
 
 ## Community
 

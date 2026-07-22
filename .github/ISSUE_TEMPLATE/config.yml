@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: Citation and release record
-    url: https://zenodo.org/records/21494128
+    url: https://doi.org/10.5281/zenodo.21494115
     about: Use the archived release record when you need the DOI or citation metadata.
   - name: Project discussion context
     url: https://github.com/DiogoRibeiro7/perishable-inventory-decision-lab#readme
