@@ -112,4 +112,4 @@ Operations:
 
 Real retailer data is commercially sensitive and usually unavailable. A controlled generator makes the assumptions explicit and permits stress tests that are difficult to construct from a single public dataset. The data layer is isolated behind a contract, so a public or private retailer dataset can be added without changing the forecasting and inventory interfaces.
 
-See [`docs/ROLE_ALIGNMENT.md`](docs/ROLE_ALIGNMENT.md) for the exact mapping between this repository and the target role, and [`docs/CASE_STUDY.md`](docs/CASE_STUDY.md) for a concise interview walkthrough.
+See [`docs/ROLE_ALIGNMENT.md`](docs/ROLE_ALIGNMENT.md) for the exact mapping between this repository and the target role, and [`docs/INTERVIEW_WALKTHROUGH.md`](docs/INTERVIEW_WALKTHROUGH.md) for a concise presentation guide.
