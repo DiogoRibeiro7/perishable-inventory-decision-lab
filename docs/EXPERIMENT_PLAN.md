@@ -55,3 +55,7 @@ A candidate policy is promoted only when it:
 - Does not create unacceptable regressions for high-priority products or stores.
 - Remains stable under stress tests.
 - Produces explanations and fallback behaviour understood by operations teams.
+
+## Reporting
+
+Each demo run writes an evaluation report that keeps forecast metrics, policy rankings, and monitoring status separate. Paired temporal resampling utilities are available for candidate-versus-baseline cost comparisons when fold-level or day-level paired results are collected.

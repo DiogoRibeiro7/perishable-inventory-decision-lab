@@ -15,6 +15,7 @@ def test_demo_pipeline_writes_expected_outputs(tmp_path: Path) -> None:
 
     assert (tmp_path / "forecast_metrics.json").exists()
     assert (tmp_path / "policy_metrics.csv").exists()
+    assert (tmp_path / "evaluation_report.json").exists()
     assert result["forecast_metrics"]["rows"] > 0
 
     forecasts = pd.read_csv(tmp_path / "forecast_predictions.csv")

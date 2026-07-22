@@ -17,6 +17,7 @@ from perishable_lab import __version__
 from perishable_lab.config import AppConfig
 from perishable_lab.data.synthetic import SyntheticDataSpec, generate_daily_demand
 from perishable_lab.data.validation import validate_daily_demand
+from perishable_lab.evaluation.reporting import build_evaluation_report
 from perishable_lab.evaluation.splits import three_way_temporal_split
 from perishable_lab.features import TARGET_COLUMN, build_features, feature_columns
 from perishable_lab.forecasting.conformal import ConformalIntervalCalibrator
@@ -240,6 +241,13 @@ def run_demo(config: AppConfig, output_dir: Path) -> dict[str, Any]:
         maximum_missing_rate=config.monitoring.maximum_missing_rate,
     )
     _write_json(output_dir / "monitoring_report.json", monitoring_report)
+
+    evaluation_report = build_evaluation_report(
+        forecast_metrics=forecast_metrics,
+        policy_metrics=aggregate_policy_metrics,
+        monitoring_report=monitoring_report,
+    )
+    _write_json(output_dir / "evaluation_report.json", evaluation_report)
 
     manifest = {
         "created_at_utc": generated_at_utc,

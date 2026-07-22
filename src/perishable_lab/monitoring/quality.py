@@ -32,16 +32,45 @@ def build_monitoring_report(
     coverage = float(forecast_metrics["empirical_coverage"])
 
     alerts: list[str] = []
+    alert_details: list[dict[str, str]] = []
     if missing_rate > maximum_missing_rate:
         alerts.append("missing_rate_exceeded")
+        alert_details.append(
+            {
+                "code": "missing_rate_exceeded",
+                "level": "blocking",
+                "owner": "data",
+            }
+        )
     if duplicate_rate > 0.0:
         alerts.append("duplicate_keys_detected")
+        alert_details.append(
+            {
+                "code": "duplicate_keys_detected",
+                "level": "blocking",
+                "owner": "data",
+            }
+        )
     if coverage < minimum_coverage:
         alerts.append("forecast_undercoverage")
+        alert_details.append(
+            {
+                "code": "forecast_undercoverage",
+                "level": "warning",
+                "owner": "forecasting",
+            }
+        )
+
+    status = "healthy"
+    if any(alert["level"] == "blocking" for alert in alert_details):
+        status = "blocking"
+    elif alert_details:
+        status = "alert"
 
     return {
-        "status": "alert" if alerts else "healthy",
+        "status": status,
         "alerts": alerts,
+        "alert_details": alert_details,
         "data": {
             "rows": len(frame),
             "maximum_missing_rate": missing_rate,
