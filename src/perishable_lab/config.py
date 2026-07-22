@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import yaml
 from pydantic import BaseModel, Field, field_validator
@@ -56,6 +56,22 @@ class MonitoringConfig(BaseModel):
     maximum_pinball_degradation: float = Field(default=0.20, ge=0.0)
 
 
+class DemandCensoringConfig(BaseModel):
+    """Configuration for latent-demand treatment under stockouts."""
+
+    method: Literal[
+        "flag_exclude",
+        "comparable_period",
+        "count_likelihood_approx",
+        "iterative_impute_refit",
+        "bounds",
+    ] = "flag_exclude"
+    uncertainty_treatment: Literal["exclude", "point", "interval"] = "exclude"
+    min_history: int = Field(default=2, ge=1)
+    max_iterations: int = Field(default=10, ge=1)
+    tolerance: float = Field(default=1e-3, gt=0.0)
+
+
 class AppConfig(BaseModel):
     """Complete application configuration."""
 
@@ -63,6 +79,7 @@ class AppConfig(BaseModel):
     forecasting: ForecastConfig = ForecastConfig()
     inventory: InventoryConfig = InventoryConfig()
     monitoring: MonitoringConfig = MonitoringConfig()
+    demand_censoring: DemandCensoringConfig = DemandCensoringConfig()
 
 
 def load_config(path: Path) -> AppConfig:
