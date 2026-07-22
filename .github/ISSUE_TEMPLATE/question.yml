@@ -1,0 +1,42 @@
+name: Question
+description: Ask a focused question about usage, assumptions, interpretation, or release artifacts.
+title: "question: "
+labels:
+  - question
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: Ask one focused question with enough context to answer.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Link relevant files, commands, outputs, or docs.
+      placeholder: I ran `poetry run perishable-lab demo ...` and saw...
+    validations:
+      required: true
+  - type: dropdown
+    id: topic
+    attributes:
+      label: Topic
+      options:
+        - Installation
+        - Demo run
+        - Forecast interpretation
+        - Inventory policy
+        - Metrics
+        - Release archive
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submit checks
+      options:
+        - label: I checked the README and release notes first.
+          required: true
