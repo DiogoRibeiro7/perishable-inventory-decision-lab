@@ -55,4 +55,5 @@ def test_release_package_docs_are_required() -> None:
     assert "docs/ROLE_ALIGNMENT_MATRIX.md" in required
     assert ".zenodo.json" in required
     assert "CITATION.cff" in required
+    assert "CODE_OF_CONDUCT.md" in required
     assert "reports/release/v0.1.0_commands.md" in required

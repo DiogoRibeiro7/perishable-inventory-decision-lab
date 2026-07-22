@@ -57,6 +57,10 @@ The demo is deterministic for a fixed seed and runs end to end without cloud cre
 
 Citation metadata is included in [`CITATION.cff`](CITATION.cff) and Zenodo metadata is included in [`.zenodo.json`](.zenodo.json). Archived release DOI: [`10.5281/zenodo.21494128`](https://doi.org/10.5281/zenodo.21494128).
 
+## Community
+
+Participation in this repository is covered by the [Code of Conduct](CODE_OF_CONDUCT.md).
+
 ## Demo Outputs
 
 ```text

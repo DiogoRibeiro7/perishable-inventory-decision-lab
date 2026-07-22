@@ -23,6 +23,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 REQUIRED_PATHS = (
     Path("README.md"),
     Path("CITATION.cff"),
+    Path("CODE_OF_CONDUCT.md"),
     Path("LICENSE"),
     Path("pyproject.toml"),
     Path(".zenodo.json"),
@@ -61,6 +62,7 @@ CARD_PATHS = (
 
 MARKDOWN_PATHS = (
     Path("README.md"),
+    Path("CODE_OF_CONDUCT.md"),
     Path("VALIDATION.md"),
     Path("docs"),
     Path("reports"),
