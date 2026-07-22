@@ -1,0 +1,64 @@
+data_assets:
+  - name: transactions
+    classification: confidential
+    contains_sensitive_rows: false
+    retention_days: 730
+    deletion_method: partition_delete
+    encryption_required: true
+  - name: store_operations
+    classification: internal
+    contains_sensitive_rows: false
+    retention_days: 365
+    deletion_method: partition_delete
+    encryption_required: true
+  - name: supplier_records
+    classification: confidential
+    contains_sensitive_rows: false
+    retention_days: 730
+    deletion_method: contractual_delete
+    encryption_required: true
+  - name: staff_overrides
+    classification: restricted
+    contains_sensitive_rows: true
+    retention_days: 365
+    deletion_method: row_delete_with_audit
+    encryption_required: true
+role_grants:
+  - principal: svc-train-dev
+    environment: dev
+    actions: [read_data, train_model]
+    resources: [dev.features.*]
+  - principal: svc-score-prod
+    environment: prod
+    actions: [read_data, score_batch]
+    resources: [prod.features.*, prod.models.approved]
+  - principal: svc-publish-prod
+    environment: prod
+    actions: [publish_recommendations]
+    resources: [prod.publication.*]
+    human_review_required: true
+  - principal: group-policy-review
+    environment: prod
+    actions: [approve_policy]
+    resources: [prod.policies.pending]
+    human_review_required: true
+  - principal: group-store-review
+    environment: prod
+    actions: [override_order]
+    resources: [prod.store_orders.*]
+    human_review_required: true
+  - principal: group-audit
+    environment: prod
+    actions: [audit_changes]
+    resources: [prod.audit.*]
+environment_separation:
+  dev_project: perishable-lab-dev
+  staging_project: perishable-lab-staging
+  prod_project: perishable-lab-prod
+secret_handling:
+  required: secret_manager_and_workload_identity
+  prohibited: committed_service_keys
+artifact_promotion:
+  requires_approval_ticket: true
+  requires_provenance_hash: true
+  publisher_must_differ_from_approver: true

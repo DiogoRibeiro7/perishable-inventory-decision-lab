@@ -1,0 +1,20 @@
+{
+  "status": "pass",
+  "reviewed_controls": [
+    "data classification",
+    "least privilege",
+    "environment separation",
+    "secret handling",
+    "artifact approval",
+    "audit redaction",
+    "dynamic identifier validation"
+  ],
+  "release_gate": [
+    "ruff",
+    "mypy",
+    "pytest",
+    "tracked text scan",
+    "secret scan",
+    "container scan before release"
+  ]
+}
