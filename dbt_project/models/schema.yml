@@ -24,6 +24,23 @@ models:
       - name: recommended_order_quantity
         tests: [not_null]
 
+  - name: fct_feature_set_daily
+    description: Point-in-time daily feature set with explicit availability and processing timestamps.
+    columns:
+      - name: business_date
+        tests: [not_null]
+      - name: store_id
+        tests: [not_null]
+      - name: product_id
+        tests: [not_null]
+      - name: feature_set_version
+        tests: [not_null]
+      - name: availability_time
+        tests: [not_null]
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [business_date, store_id, product_id, feature_set_version]
+
   - name: stg_product_identity_mappings
     description: Validated slowly changing product-identity mappings.
     columns:

@@ -12,6 +12,12 @@ import typer
 from perishable_lab.analysis import ProfileConfig, write_profile_report
 from perishable_lab.config import load_config
 from perishable_lab.data.synthetic import SyntheticDataSpec, generate_daily_demand
+from perishable_lab.feature_store import (
+    FeatureMetadata,
+    FeatureRegistry,
+    source_partition_manifest,
+    write_training_snapshot_manifest,
+)
 from perishable_lab.pipelines.demo import run_demo
 
 app = typer.Typer(
@@ -116,6 +122,50 @@ def profile_data(
             indent=2,
         )
     )
+
+
+@app.command("snapshot-features")
+def snapshot_features(
+    input_path: Annotated[
+        Path,
+        typer.Argument(help="CSV file containing a frozen training feature table."),
+    ],
+    output_path: Annotated[
+        Path,
+        typer.Option(help="JSON manifest path to write."),
+    ] = Path("artifacts/feature-store/training_snapshot_manifest.json"),
+    partition_columns: Annotated[
+        str,
+        typer.Option(help="Comma-separated source partition columns present in the input CSV."),
+    ] = "date",
+) -> None:
+    """Write a reproducible training feature snapshot manifest."""
+    frame = pd.read_csv(input_path)
+    partitions = tuple(column.strip() for column in partition_columns.split(",") if column.strip())
+    registry = FeatureRegistry(
+        tuple(
+            FeatureMetadata(
+                name=column,
+                owner="local",
+                source=input_path.stem,
+                transformation="snapshot_input",
+                unit="source_unit",
+                availability_delay_hours=0.0,
+                freshness_sla_hours=24.0,
+                null_policy="allow",
+                version="snapshot-v1",
+                dtype=str(frame[column].dtype),
+            )
+            for column in sorted(frame.columns)
+        )
+    )
+    manifest = write_training_snapshot_manifest(
+        frame,
+        registry,
+        source_partition_manifest({input_path.stem: frame}, partition_columns=partitions),
+        output_path,
+    )
+    typer.echo(json.dumps(manifest, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":
