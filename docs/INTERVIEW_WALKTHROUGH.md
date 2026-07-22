@@ -38,11 +38,11 @@ The calibration graphic is in [`reports/example_run/calibration.png`](../reports
 
 ### Minutes 9-10: Limitations and next steps
 
-Synthetic data validates engineering structure and reasoning, not commercial lift. With real retailer data, the next priorities are stockout-censoring correction, segmented calibration, stable product/store encodings, event-order validation, and policy selection with hard service constraints.
+Synthetic data validates engineering structure and reasoning, not commercial lift. With real retailer data, the next priorities are validating censored-demand assumptions, segmented calibration, stable product/store encodings, event-order validation, and policy selection with hard service constraints.
 
 ## Three Difficult Examples
 
-1. **High promotion, low observed sales.** The model may treat low sales as low demand, but the true reason could be a stockout during promotion. The canonical layer now carries stockout visibility, but the forecast target still needs censored-demand correction.
+1. **High promotion, low observed sales.** The model may treat low sales as low demand, but the true reason could be a stockout during promotion. The canonical layer carries censoring reasons, and the forecast path can exclude or adjust those rows through latent-demand weights.
 2. **Short shelf life with late supplier delivery.** A service-level policy can order correctly on paper and still create waste if the delivery arrives after the sellable window. The simulator now records effective lead time and supplier fill quantity for stress tests.
 3. **Cold-start product remap.** A supplier item ID can change while the stable demand entity remains the same. The source builder uses effective-dated product mapping; forecasting still needs persisted categorical vocabularies before production scoring.
 
@@ -64,7 +64,7 @@ Synthetic data validates engineering structure and reasoning, not commercial lif
 3. **How do you prevent leakage?** Demand lags and rolling statistics are shifted; splits are chronological.
 4. **What does conformal calibration add?** It adjusts interval coverage using held-out calibration residuals.
 5. **Where can conformal calibration fail?** Marginal coverage can hide segment undercoverage under promotions, intermittency, or store-level shifts.
-6. **How are stockouts handled?** They are surfaced as a data-contract concern; the current forecast still needs explicit censored-demand correction.
+6. **How are stockouts handled?** They are surfaced as censored-demand rows with reasons, latent-demand bounds, provenance, and training weights.
 7. **What is the main simulator assumption?** FIFO age cohorts approximate sell-through and expiry; event ordering must match the retailer process.
 8. **Why compare policy metrics separately from forecast metrics?** A statistically better forecast can produce worse decisions if errors occur in expensive tails.
 9. **Why did the economic policy underperform?** The configured underage cost was too low relative to the service implications.
@@ -78,4 +78,4 @@ Synthetic data validates engineering structure and reasoning, not commercial lif
 17. **What is the biggest real-data risk?** Observed sales are not latent demand when shelves are empty.
 18. **What is the biggest modelling risk?** Aggregate calibration can hide costly tail failures in important segments.
 19. **What is the biggest operations risk?** Recommendations may ignore constraints or staff workflows not represented in the data.
-20. **What would you build next?** Censored-demand correction, segmented calibration, stable encodings, event-order fixtures, and constrained policy promotion.
+20. **What would you build next?** Retailer validation for censored-demand assumptions, segmented calibration, stable encodings, event-order fixtures, and constrained policy promotion.

@@ -45,7 +45,7 @@ The cloud, dbt, Airflow, and portfolio materials are credible scaffolds rather t
 
 | Capability | Status | Gap |
 |---|---|---|
-| Stockout-censored demand training target | Absent | Sales can still be interpreted as demand when stock is unavailable. |
+| Stockout-censored demand training target | Implemented in `0.2.0` | Needs retailer calibration before live use. |
 | Segment-level calibration and monitoring | Partially implemented | Global interval coverage is measured; store/product/promotion/shelf-life coverage is not enforced. |
 | Stable categorical encodings for scoring | Absent | `build_features` recomputes category codes per frame, which can shift train versus score mappings. |
 | Operational event-order configuration | Absent | Simulator event order is fixed rather than retailer-configurable and validated. |
@@ -56,12 +56,12 @@ The cloud, dbt, Airflow, and portfolio materials are credible scaffolds rather t
 
 ## Findings
 
-### Blocker: Sales Are Still Used As Demand Under Stockout Conditions
+### Medium: Censored-Demand Assumptions Need Retailer Validation
 
 - Evidence: `src/perishable_lab/data/canonical.py`, `src/perishable_lab/features.py`, `docs/READINESS_REVIEW.md`
-- Severity: Blocker for live use
+- Severity: Medium for local evaluation; blocker for live use until validated with retailer evidence
 - Failure mode: zero or low observed sales during an empty-shelf period trains the model to expect lower demand instead of recognizing censored demand.
-- Current coverage: `tests/test_retail_adapter.py` checks source deduplication, mapping, cutoff behavior, and fail-closed validation, but does not assert censored target behavior.
+- Current coverage: `tests/test_retail_adapter.py` asserts censored target behavior, `tests/test_features.py` protects against feature leakage, `tests/test_forecasting_horizon.py` covers row weights, and demo metrics report censoring diagnostics.
 - Acceptance gate: canonical output includes `is_censored_demand`; training can exclude, weight, or adjust censored rows; a test proves a zero-sale empty-stock row is not treated as ordinary zero demand.
 
 ### High: Calibration Is Global Rather Than Segment-Aware
@@ -124,4 +124,4 @@ The cloud, dbt, Airflow, and portfolio materials are credible scaffolds rather t
 
 Status: no-go for live replenishment publication; suitable for portfolio demonstration, local end-to-end validation, and shadow evaluation planning.
 
-The next delivery milestone should address censored demand, stable scoring encodings, segmented calibration, and constrained policy selection before adding more advanced models.
+The next delivery milestone should address stable scoring encodings, segmented calibration, simulator event-order choices, and constrained policy selection before adding more advanced models.

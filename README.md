@@ -17,12 +17,13 @@ For a portfolio-style technical narrative, see [`docs/PORTFOLIO_CASE_STUDY.md`](
 For each `date x store_id x product_id`, the system:
 
 1. Validates source data and maps product identifiers into a stable daily contract.
-2. Builds leakage-safe lag, rolling, calendar, price, promotion, and inventory features.
-3. Fits quantile demand forecasts and calibrates forecast intervals.
-4. Converts forecast distributions into order quantities.
-5. Simulates FIFO perishable inventory with expiry, shrinkage, lead time, stock-record noise, supplier fill rate, and order constraints.
-6. Compares policies on fill rate, waste, lost sales, inventory, and total operating cost.
-7. Writes versioned run artifacts, monitoring status, and an evaluation report.
+2. Separates observed sales from availability-constrained demand signals with censoring flags, reasons, latent-demand bounds, and training weights.
+3. Builds leakage-safe lag, rolling, calendar, price, promotion, and inventory features.
+4. Fits quantile demand forecasts and calibrates forecast intervals.
+5. Converts forecast distributions into order quantities.
+6. Simulates FIFO perishable inventory with expiry, shrinkage, lead time, stock-record noise, supplier fill rate, and order constraints.
+7. Compares policies on fill rate, waste, lost sales, inventory, and total operating cost.
+8. Writes versioned run artifacts, monitoring status, and an evaluation report.
 
 ## Why This Project Exists
 
@@ -85,9 +86,9 @@ Committed example artifacts are available in [`reports/example_run`](reports/exa
 
 | Policy | Fill rate | Waste rate | Cost per demand unit |
 |---|---:|---:|---:|
-| fixed service level | 0.892 | 0.064 | 0.381 |
-| median baseline | 0.670 | 0.028 | 0.580 |
-| economic newsvendor | 0.568 | 0.023 | 0.666 |
+| fixed service level | 0.820 | 0.044 | 0.360 |
+| median baseline | 0.632 | 0.022 | 0.428 |
+| economic newsvendor | 0.296 | 0.010 | 0.568 |
 
 In this synthetic run, the fixed service-level policy wins because the availability gain outweighs the extra inventory and waste. The economic critical-fractile policy under-orders under the configured cost assumptions, which is a useful diagnostic rather than a result to hide.
 
@@ -118,9 +119,9 @@ tests/             # Unit and integration tests
 
 ## Core Components
 
-**Data contracts:** Typed source contracts cover sales, stock snapshots, waste events, deliveries, orders, product master, supplier mappings, promotions, prices, and calendars. The canonical builder deduplicates versioned records, respects effective-dated product mappings, and filters price/promotion inputs to values known by the decision cut-off.
+**Data contracts:** Typed source contracts cover sales, stock snapshots, waste events, deliveries, orders, product master, supplier mappings, promotions, prices, and calendars. The canonical builder deduplicates versioned records, respects effective-dated product mappings, filters price/promotion inputs to values known by the decision cut-off, and emits censoring metadata when stock evidence shows sales may understate demand.
 
-**Forecasting:** The baseline model fits one scikit-learn gradient-boosting regressor per quantile. Predictions are constrained to be non-negative and monotone. The package also includes seasonal empirical fallback forecasts, an intermittent-demand baseline, lead-time cumulative quantile utilities, and model serialization.
+**Forecasting:** The baseline model fits one scikit-learn gradient-boosting regressor per quantile. Predictions are constrained to be non-negative and monotone. The default demo uses latent-demand estimates as the target and sample weights to exclude availability-constrained rows when configured. The package also includes seasonal empirical fallback forecasts, an intermittent-demand baseline, lead-time cumulative quantile utilities, and model serialization.
 
 **Inventory simulation:** The simulator represents inventory as FIFO shelf-life cohorts with pending deliveries, expiry, shrinkage, lost sales, noisy observed inventory, supplier fill rate, lead-time jitter, capacity, minimum order quantities, and case packs.
 
@@ -159,13 +160,13 @@ See [`gcp/DEPLOYMENT_RUNBOOK.md`](gcp/DEPLOYMENT_RUNBOOK.md) for the deployment 
 
 ## Roadmap
 
-The detailed path from the current `0.1.0` release to a stable `1.0.0` decision-system release is maintained in [`ROADMAP.md`](ROADMAP.md). It defines planned versions, acceptance gates, migration notes, rollback paths, release blockers, and traceability back to the existing design documents.
+The detailed path from the current `0.2.0` release to a stable `1.0.0` decision-system release is maintained in [`ROADMAP.md`](ROADMAP.md). It defines planned versions, acceptance gates, migration notes, rollback paths, release blockers, and traceability back to the existing design documents.
 
 ## Current Limitations
 
 This is a decision-system prototype, not proof of commercial lift. The synthetic generator is useful for controlled stress tests, but real retailer deployment would require:
 
-- Explicit stockout-censoring correction, because observed sales are not always latent demand.
+- Retailer validation of censored-demand assumptions, because synthetic stockout evidence is not field evidence.
 - Segmented calibration by demand volume, promotion, shelf life, store, and product.
 - Stable persisted encodings for store and product identifiers.
 - Event-order validation against the retailer's actual operating process.

@@ -104,7 +104,7 @@ The committed example run shows one controlled scenario, not field impact. Evide
 Key limitations:
 
 - No real retailer transaction feed is committed.
-- Stockout censoring is represented, but not estimated from retailer operations.
+- Stockout censoring is represented and controlled in the local pipeline, but not calibrated from retailer operations.
 - Override behavior is documented and tested structurally, but not calibrated from staff workflow data.
 - Supplier disruption and shelf-life distributions require retailer-specific calibration.
 

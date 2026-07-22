@@ -25,4 +25,4 @@ This project treats fresh-food replenishment as a decision problem under two cou
 
 ## What I would build next
 
-The next version would estimate multi-horizon joint or marginal demand distributions, add stockout-censoring correction, represent product identity through a hierarchy or learned embedding, and optimise a constrained policy over lead time and shelf-life cohorts. I would deploy it in shadow mode first and measure operational lift by store and product segment.
+The next version would estimate multi-horizon joint or marginal demand distributions, validate censored-demand assumptions against retailer operations, represent product identity through a hierarchy or learned embedding, and optimise a constrained policy over lead time and shelf-life cohorts. I would deploy it in shadow mode first and measure operational lift by store and product segment.

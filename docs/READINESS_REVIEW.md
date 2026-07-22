@@ -4,13 +4,13 @@ This review looks for real-world failure modes before shadow deployment.
 
 ## Findings
 
-### High: Sales are still treated as demand under stockouts
+### Medium: Censored-demand handling needs retailer validation
 
-- File and line: `src/perishable_lab/data/canonical.py:126`
-- Failure scenario: a store sells zero units because the shelf is empty, and the canonical builder records zero demand. The forecaster learns that demand disappeared rather than that sales were censored by unavailable inventory.
-- Why current tests do not catch it: tests verify duplicate handling and product mapping, but they do not assert a separate censored-demand treatment or correction path.
-- Minimal reproducible test: build a daily row with `quantity = 0` and a stock snapshot with `on_hand_quantity = 0`; assert the canonical output marks the row as censored and downstream training can exclude or adjust it.
-- Recommended fix: add an explicit censored target flag to feature construction and train/evaluate with either exclusion, imputation, or a censored-demand estimator.
+- File and line: `src/perishable_lab/data/canonical.py`
+- Failure scenario: a store sells zero units because the shelf is empty, but stock records are stale or missing. The system can flag and weight the row, but retailer-specific lost-sales behavior may still be misestimated.
+- Current coverage: tests assert zero-stock and insufficient-stock rows are marked censored, feature selection excludes target-support columns, and forecast training accepts include, exclude, and down-weight modes.
+- Remaining validation: compare censoring rates and latent-demand assumptions against retailer stock, lost-sales, substitution, and shelf-availability evidence.
+- Recommended next step: calibrate censoring strategy selection and alert thresholds by store/product segment before live recommendation publication.
 - Interface impact: adds a public column to the canonical data contract.
 
 ### High: Conformal calibration is only marginal
@@ -60,11 +60,11 @@ This review looks for real-world failure modes before shadow deployment.
 
 ## Recommendation
 
-No-go for live recommendation publication. The project is suitable for local demonstration and shadow-style evaluation, but the stockout-censoring, segmented calibration, stable categorical encoding, event-order validation, and constrained policy selection gaps should be closed before operational use.
+No-go for live recommendation publication. The project is suitable for local demonstration and shadow-style evaluation, but censored-demand assumptions, segmented calibration, stable categorical encoding, event-order validation, and constrained policy selection gaps should be closed before operational use.
 
 ## Experiments Required Before Reconsideration
 
-1. Stockout-censoring experiment comparing naive sales targets with censored-demand correction.
+1. Retailer validation experiment comparing naive sales targets with censored-demand correction.
 2. Segmented calibration experiment by demand volume, promotion, shelf life, store, and product.
 3. Encoding-stability test across train, calibration, and scoring slices with cold-start products.
 4. Event-order sensitivity analysis for short shelf-life products.

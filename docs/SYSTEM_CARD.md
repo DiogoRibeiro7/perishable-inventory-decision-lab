@@ -4,7 +4,7 @@
 
 Card version: `system-card-v1`
 
-Package version: `0.1.0`
+Package version: `0.2.0`
 
 Owner: platform
 
@@ -13,12 +13,13 @@ Owner: platform
 The system is batch-first:
 
 1. Source contracts validate store-product-day data.
-2. Feature generation applies point-in-time rules.
-3. Forecasting produces versioned distributions.
-4. Decision contracts validate inventory, pending orders, units, horizon, and policy inputs.
-5. Simulation and offline checks evaluate candidate policies.
-6. Publication stages immutable batches and atomically swaps the active pointer.
-7. Monitoring checks data, model, decision, and system health.
+2. Canonical demand rows identify availability-constrained observations and retain latent-demand provenance.
+3. Feature generation applies point-in-time rules without leaking target-support columns into model inputs.
+4. Forecasting produces versioned distributions.
+5. Decision contracts validate inventory, pending orders, units, horizon, and policy inputs.
+6. Simulation and offline checks evaluate candidate policies.
+7. Publication stages immutable batches and atomically swaps the active pointer.
+8. Monitoring checks data, model, decision, and system health.
 
 Evidence: `docs/ARCHITECTURE.md`, `docs/FEATURE_STORE_LINEAGE.md`, `docs/PUBLICATION_RUNBOOK.md`, `tests/test_publication.py`.
 

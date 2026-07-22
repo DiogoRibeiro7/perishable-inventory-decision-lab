@@ -8,7 +8,7 @@ authors:
     orcid: "https://orcid.org/0009-0001-2022-7072"
     email: "dfr@esmad.ipp.pt"
     affiliation: "School of Media Arts and Design, Polytechnic Institute of Porto"
-version: "0.1.0"
+version: "0.2.0"
 date-released: "2026-07-22"
 doi: "10.5281/zenodo.21494115"
 license: "Apache-2.0"

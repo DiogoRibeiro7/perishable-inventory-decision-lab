@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "perishable-inventory-decision-lab"
-version = "0.1.0"
+version = "0.2.0"
 description = "Probabilistic forecasting and perishable inventory decision system"
 authors = ["Diogo"]
 readme = "README.md"

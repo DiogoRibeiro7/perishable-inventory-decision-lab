@@ -73,11 +73,16 @@ def _prepare_frame(frame: pd.DataFrame) -> pd.DataFrame:
 
     prepared = prepared.sort_values(["date", "store_id", "product_id"]).reset_index(drop=True)
     prepared["is_censored_demand"] = _censoring_mask(prepared)
+    if "censoring_reason" not in prepared.columns:
+        prepared["censoring_reason"] = "not_censored"
+    prepared.loc[~prepared["is_censored_demand"], "censoring_reason"] = "not_censored"
     return prepared
 
 
 def _censoring_mask(frame: pd.DataFrame) -> pd.Series:
     censored = pd.Series(False, index=frame.index)
+    if "is_censored_demand" in frame.columns:
+        censored = censored | frame["is_censored_demand"].fillna(False).astype(bool)
     if "stockout_flag" in frame.columns:
         censored = censored | frame["stockout_flag"].fillna(False).astype(bool)
     if "observed_inventory" in frame.columns:

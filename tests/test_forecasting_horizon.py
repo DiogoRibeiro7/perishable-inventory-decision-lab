@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
+import pytest
 
 from perishable_lab.data.synthetic import SyntheticDataSpec, generate_daily_demand
 from perishable_lab.features import TARGET_COLUMN, build_features, feature_columns
@@ -73,3 +75,43 @@ def test_quantile_forecaster_serialization_round_trip(tmp_path: Path) -> None:
     loaded = QuantileForecaster.load(path)
 
     pd.testing.assert_frame_equal(model.predict(score[columns]), loaded.predict(score[columns]))
+
+
+def test_quantile_forecaster_respects_censored_row_weight_modes() -> None:
+    features = pd.DataFrame({"signal": [0.0] * 10 + [1.0] * 10})
+    target = pd.Series([1.0] * 10 + [100.0] * 10)
+    scoring = pd.DataFrame({"signal": [1.0]})
+    settings = {
+        "quantiles": (0.5,),
+        "max_iter": 80,
+        "min_samples_leaf": 1,
+        "random_state": 7,
+    }
+
+    included = QuantileForecaster(**settings).fit(features, target).predict(scoring).loc[0, "q50"]
+    excluded_weights = pd.Series([1.0] * 10 + [0.0] * 10)
+    excluded = (
+        QuantileForecaster(**settings)
+        .fit(features, target, sample_weight=excluded_weights)
+        .predict(scoring)
+        .loc[0, "q50"]
+    )
+    downweighted = (
+        QuantileForecaster(**settings)
+        .fit(features, target, sample_weight=np.where(excluded_weights == 0.0, 0.05, 1.0))
+        .predict(scoring)
+        .loc[0, "q50"]
+    )
+
+    assert included > 90.0
+    assert excluded < 10.0
+    assert downweighted < included
+
+
+def test_quantile_forecaster_rejects_invalid_sample_weights() -> None:
+    features = pd.DataFrame({"signal": [0.0, 1.0]})
+    target = pd.Series([1.0, 2.0])
+    model = QuantileForecaster(quantiles=(0.5,), max_iter=5, min_samples_leaf=1)
+
+    with pytest.raises(ValueError, match="cannot be negative"):
+        model.fit(features, target, sample_weight=pd.Series([1.0, -1.0]))

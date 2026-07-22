@@ -3,32 +3,32 @@
 This committed report is produced from a deterministic synthetic run:
 
 ```bash
-poetry run perishable-lab demo --days 180 --stores 3 --products 8 --seed 42 --output-dir artifacts/example
+poetry run perishable-lab demo --days 90 --stores 2 --products 4 --seed 42 --output-dir reports/example_run
 ```
 
-The run contains **744 untouched test rows** after chronological training and calibration windows. It is evidence that the pipeline executes end to end; it is not evidence of commercial impact.
+The run contains **104 untouched test rows** after chronological training and calibration windows. It is evidence that the pipeline executes end to end; it is not evidence of commercial impact.
 
 ## Probabilistic forecast
 
 | Metric | Value |
 |---|---:|
-| 80% interval empirical coverage | 0.809 |
-| 90% interval empirical coverage | 0.929 |
-| Approximate CRPS | 1.778 |
-| Median pinball loss | 1.827 |
-| Mean 90% interval width | 16.261 |
+| 90% interval empirical coverage | 0.894 |
+| Approximate CRPS | 1.538 |
+| Median pinball loss | 1.593 |
+| Mean 90% interval width | 11.549 |
+| Censored rows in default synthetic run | 0 |
 
 ![Calibration](example_run/calibration.png)
 
-The 90% interval slightly overcovers in this run. The appropriate next step is segmented calibration analysis, because good global coverage can conceal undercoverage for promotions, intermittent products, or individual stores.
+The 90% interval is close to nominal in this run. The appropriate next step is segmented calibration analysis, because good global coverage can conceal undercoverage for promotions, intermittent products, or individual stores.
 
 ## Inventory-policy comparison
 
 | Policy | Fill rate | Waste rate | Cost per demand unit |
 |---|---:|---:|---:|
-| fixed service level | 0.892 | 0.064 | 0.381 |
-| median baseline | 0.670 | 0.028 | 0.580 |
-| economic newsvendor | 0.568 | 0.023 | 0.666 |
+| fixed service level | 0.820 | 0.044 | 0.360 |
+| median baseline | 0.632 | 0.022 | 0.428 |
+| economic newsvendor | 0.296 | 0.010 | 0.568 |
 
 ![Policy frontier](example_run/policy_frontier.png)
 
@@ -40,4 +40,4 @@ The fixed service-level policy is strongest under this synthetic cost configurat
 - A median policy leaves substantial availability on the table.
 - Raising the target quantile improves fill rate but increases waste and average inventory.
 - The unconstrained economic policy can violate an operationally acceptable service floor. A production version should optimise cost subject to a minimum service constraint and should estimate costs with retailer stakeholders.
-- Results should next be broken down by demand volume, shelf life, promotion status, store, and intermittent-demand class.
+- Censoring diagnostics are now reported by store, product, demand-volume band, and shelf-life band.

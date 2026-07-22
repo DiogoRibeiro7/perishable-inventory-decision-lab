@@ -1,6 +1,6 @@
 # Delivery Roadmap To 1.0.0
 
-This roadmap turns the current `0.1.0` portfolio-grade release into a `1.0.0` decision-system release. The target is not to claim field impact from synthetic evidence. The target is to make the package technically ready for audited shadow evaluation, controlled pilot use, and repeatable public benchmarking.
+This roadmap turns the current `0.2.0` portfolio-grade release into a `1.0.0` decision-system release. The target is not to claim field impact from synthetic evidence. The target is to make the package technically ready for audited shadow evaluation, controlled pilot use, and repeatable public benchmarking.
 
 ## Roadmap Principles
 
@@ -16,7 +16,7 @@ This roadmap turns the current `0.1.0` portfolio-grade release into a `1.0.0` de
 
 | Version | Theme | Release outcome |
 |---|---|---|
-| `0.2.0` | Demand contracts and censored sales | Canonical data distinguishes observed sales from likely latent demand under stockout conditions. |
+| `0.2.0` | Demand contracts and censored sales | Implemented: canonical data distinguishes observed sales from likely latent demand under stockout conditions. |
 | `0.3.0` | Scoring parity and calibration | Forecast scoring uses persisted vocabularies and reports segment-level calibration. |
 | `0.4.0` | Simulator validity and policy constraints | Inventory event order is configurable and policy selection can enforce service floors. |
 | `0.5.0` | Public benchmark baseline | A user-provided public retail dataset path is reproducible, documented, and separated from synthetic examples. |
@@ -64,6 +64,8 @@ Every release from `0.5.0` onward must additionally include:
 - A rollback path for any new publication, warehouse, or serving behavior.
 
 ## `0.2.0`: Demand Contracts And Censored Sales
+
+Status: implemented in package version `0.2.0`.
 
 ### Goal
 

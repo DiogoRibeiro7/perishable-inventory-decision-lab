@@ -24,12 +24,20 @@ Latent demand is an estimate or bound for customer demand that may have been hid
 ## Required Provenance Columns
 
 - `observed_sales`
+- `observed_inventory`
+- `late_stock_snapshot`
 - `is_censored_demand`
+- `censoring_reason`
+- `stockout_flag`
 - `latent_demand_estimate`
 - `latent_demand_lower`
 - `latent_demand_upper`
 - `latent_demand_provenance`
 - `latent_demand_training_weight`
+
+## Canonical Contract
+
+The canonical daily builder emits the provenance columns when stock snapshots are provided. It marks rows as censored when available cutoff-time evidence indicates zero stock, inventory no greater than observed sales, missing stock context, or stock snapshots that arrived after the decision cutoff. When stock sources are absent, the new fields remain nullable or conservative and rows are treated as uncensored for backward compatibility.
 
 ## Fallback
 

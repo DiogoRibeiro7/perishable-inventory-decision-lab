@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import UTC
 
+import numpy as np
 import pandas as pd
 
 from perishable_lab.data.validation import validate_daily_demand
@@ -161,11 +162,45 @@ def _latest_by_key(frame: pd.DataFrame, value_columns: list[str]) -> pd.DataFram
     return deduped[["business_date", "store_id", "product_id", *value_columns]]
 
 
+def _stock_daily(inputs: DailyRetailInputs, *, cutoff_hour: int) -> tuple[pd.DataFrame, bool]:
+    stock = _empty_or_copy(inputs.stock_snapshots)
+    columns = [
+        "business_date",
+        "store_id",
+        "product_id",
+        "observed_inventory",
+        "late_stock_snapshot",
+    ]
+    if stock.empty:
+        return pd.DataFrame(columns=columns), False
+
+    stock = deduplicate_versioned_events(stock, "stock_snapshots")
+    stock = _map_products(_normalise_business_date(stock), inputs.product_master, "stock_snapshots")
+    stock["ingestion_time"] = pd.to_datetime(stock["ingestion_time"], utc=True).dt.tz_convert(None)
+    stock["known_by_cutoff"] = stock["ingestion_time"] <= _decision_cutoff(stock, cutoff_hour)
+
+    key_columns = ["business_date", "store_id", "product_id"]
+    all_keys = stock[key_columns].drop_duplicates()
+    known = _latest_by_key(
+        stock.loc[stock["known_by_cutoff"]].rename(columns={"on_hand_quantity": "observed_inventory"}),
+        ["observed_inventory"],
+    )
+    late_keys = stock.loc[~stock["known_by_cutoff"], key_columns].drop_duplicates()
+    late_keys["late_stock_snapshot"] = True
+
+    stock_daily = all_keys.merge(known, on=key_columns, how="left")
+    stock_daily = stock_daily.merge(late_keys, on=key_columns, how="left")
+    stock_daily["late_stock_snapshot"] = (
+        stock_daily["late_stock_snapshot"].where(stock_daily["late_stock_snapshot"].notna(), False).astype(bool)
+    )
+    return stock_daily[columns], True
+
+
 def _aggregate_optional_sources(
     inputs: DailyRetailInputs,
     *,
     cutoff_hour: int,
-) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, bool]:
     prices = _filter_known_by_cutoff(
         _empty_or_copy(inputs.prices),
         known_at_column="known_at",
@@ -188,19 +223,65 @@ def _aggregate_optional_sources(
             .agg(promotion=("promotion", "max"))
         )
 
-    stock = _empty_or_copy(inputs.stock_snapshots)
-    if stock.empty:
-        stock_daily = pd.DataFrame(
-            columns=["business_date", "store_id", "product_id", "stockout_observed"]
-        )
-    else:
-        stock = deduplicate_versioned_events(stock, "stock_snapshots")
-        stock = _map_products(_normalise_business_date(stock), inputs.product_master, "stock_snapshots")
-        stock = _latest_by_key(stock, ["on_hand_quantity"])
-        stock["stockout_observed"] = stock["on_hand_quantity"] <= 0
-        stock_daily = stock[["business_date", "store_id", "product_id", "stockout_observed"]]
+    stock_daily, stock_source_present = _stock_daily(inputs, cutoff_hour=cutoff_hour)
 
-    return price_daily, promotion_daily, stock_daily
+    return price_daily, promotion_daily, stock_daily, stock_source_present
+
+
+def _attach_censoring_contract(daily: pd.DataFrame, *, stock_source_present: bool) -> pd.DataFrame:
+    enriched = daily.copy()
+    if "observed_inventory" not in enriched.columns:
+        enriched["observed_inventory"] = np.nan
+    if "late_stock_snapshot" not in enriched.columns:
+        enriched["late_stock_snapshot"] = False
+    observed_inventory = pd.to_numeric(enriched["observed_inventory"], errors="coerce")
+    observed_sales = pd.to_numeric(enriched["observed_sales"], errors="coerce")
+
+    enriched["late_stock_snapshot"] = (
+        enriched["late_stock_snapshot"].where(enriched["late_stock_snapshot"].notna(), False).astype(bool)
+    )
+    enriched["stockout_observed"] = observed_inventory <= 0
+    enriched["stockout_observed"] = (
+        enriched["stockout_observed"].where(enriched["stockout_observed"].notna(), False).astype(bool)
+    )
+
+    enriched["is_censored_demand"] = False
+    enriched["censoring_reason"] = "not_censored"
+    enriched["stockout_flag"] = False
+    if not stock_source_present:
+        return _attach_latent_demand_defaults(enriched)
+
+    missing_stock = observed_inventory.isna()
+    late_stock = missing_stock & enriched["late_stock_snapshot"]
+    zero_stock = observed_inventory <= 0
+    insufficient_stock = (observed_inventory > 0) & (observed_inventory <= observed_sales)
+
+    reason_masks = (
+        ("late_stock_snapshot", late_stock),
+        ("missing_stock_snapshot", missing_stock & ~late_stock),
+        ("zero_stock", zero_stock),
+        ("insufficient_stock", insufficient_stock),
+    )
+    for reason, mask in reason_masks:
+        enriched.loc[mask, "is_censored_demand"] = True
+        enriched.loc[mask, "censoring_reason"] = reason
+
+    enriched["stockout_flag"] = enriched["is_censored_demand"].astype(bool)
+    return _attach_latent_demand_defaults(enriched)
+
+
+def _attach_latent_demand_defaults(frame: pd.DataFrame) -> pd.DataFrame:
+    adjusted = frame.copy()
+    sales = pd.to_numeric(adjusted["observed_sales"], errors="coerce").astype(float)
+    adjusted["latent_demand_estimate"] = sales
+    adjusted["latent_demand_lower"] = sales
+    adjusted["latent_demand_upper"] = sales
+    adjusted["latent_demand_provenance"] = "observed_available_sales"
+    adjusted["latent_demand_training_weight"] = 1.0
+    censored = adjusted["is_censored_demand"].astype(bool)
+    adjusted.loc[censored, "latent_demand_provenance"] = "censored_observed_sales"
+    adjusted.loc[censored, "latent_demand_training_weight"] = 0.0
+    return adjusted
 
 
 def build_canonical_daily_demand(
@@ -214,7 +295,7 @@ def build_canonical_daily_demand(
 
     sales = deduplicate_versioned_events(inputs.sales, "sales")
     daily = _aggregate_sales(sales, inputs.product_master)
-    price_daily, promotion_daily, stock_daily = _aggregate_optional_sources(
+    price_daily, promotion_daily, stock_daily, stock_source_present = _aggregate_optional_sources(
         inputs,
         cutoff_hour=decision_cutoff_hour,
     )
@@ -236,9 +317,7 @@ def build_canonical_daily_demand(
     )
 
     daily["promotion"] = daily["promotion"].where(daily["promotion"].notna(), 0).astype(int)
-    daily["stockout_observed"] = (
-        daily["stockout_observed"].where(daily["stockout_observed"].notna(), False).astype(bool)
-    )
+    daily = _attach_censoring_contract(daily, stock_source_present=stock_source_present)
     daily["shrinkage_rate"] = 0.0
     daily["record_error_std"] = 0.0
     daily["generated_at_utc"] = pd.Timestamp.now(tz=UTC).isoformat()

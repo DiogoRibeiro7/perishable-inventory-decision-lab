@@ -51,5 +51,16 @@ def validate_daily_demand(frame: pd.DataFrame) -> ValidationResult:
         errors.append("Lead time cannot be negative")
     if frame[sorted(REQUIRED_COLUMNS)].isna().any().any():
         errors.append("Required columns contain missing values")
+    if "is_censored_demand" in frame.columns and frame["is_censored_demand"].isna().any():
+        errors.append("Censored-demand flags cannot be missing")
+    if "latent_demand_training_weight" in frame.columns:
+        weights = pd.to_numeric(frame["latent_demand_training_weight"], errors="coerce")
+        if weights.isna().any() or (weights < 0.0).any():
+            errors.append("Latent-demand training weights must be non-negative")
+    if {"latent_demand_estimate", "observed_sales"}.issubset(frame.columns):
+        estimate = pd.to_numeric(frame["latent_demand_estimate"], errors="coerce")
+        observed = pd.to_numeric(frame["observed_sales"], errors="coerce")
+        if estimate.isna().any() or (estimate < observed).any():
+            errors.append("Latent-demand estimates cannot be below observed sales")
 
     return ValidationResult(not errors, tuple(errors))

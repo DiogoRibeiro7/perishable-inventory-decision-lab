@@ -1,15 +1,128 @@
 {
-  "approximate_crps": 1.7778539621737544,
+  "approximate_crps": 1.5378350156875125,
+  "censoring_segments": [
+    {
+      "censored_rows": 0,
+      "censoring_rate": 0.0,
+      "mean_latent_demand_estimate": 13.162698412698413,
+      "mean_observed_sales": 13.162698412698413,
+      "mean_uplift": 0.0,
+      "rows": 252,
+      "segment_type": "demand_volume_band",
+      "segment_value": "high"
+    },
+    {
+      "censored_rows": 0,
+      "censoring_rate": 0.0,
+      "mean_latent_demand_estimate": 0.5361702127659574,
+      "mean_observed_sales": 0.5361702127659574,
+      "mean_uplift": 0.0,
+      "rows": 235,
+      "segment_type": "demand_volume_band",
+      "segment_value": "low"
+    },
+    {
+      "censored_rows": 0,
+      "censoring_rate": 0.0,
+      "mean_latent_demand_estimate": 4.8068669527897,
+      "mean_observed_sales": 4.8068669527897,
+      "mean_uplift": 0.0,
+      "rows": 233,
+      "segment_type": "demand_volume_band",
+      "segment_value": "medium"
+    },
+    {
+      "censored_rows": 0,
+      "censoring_rate": 0.0,
+      "mean_latent_demand_estimate": 8.03888888888889,
+      "mean_observed_sales": 8.03888888888889,
+      "mean_uplift": 0.0,
+      "rows": 180,
+      "segment_type": "product_id",
+      "segment_value": "P0000"
+    },
+    {
+      "censored_rows": 0,
+      "censoring_rate": 0.0,
+      "mean_latent_demand_estimate": 1.1666666666666667,
+      "mean_observed_sales": 1.1666666666666667,
+      "mean_uplift": 0.0,
+      "rows": 180,
+      "segment_type": "product_id",
+      "segment_value": "P0001"
+    },
+    {
+      "censored_rows": 0,
+      "censoring_rate": 0.0,
+      "mean_latent_demand_estimate": 3.888888888888889,
+      "mean_observed_sales": 3.888888888888889,
+      "mean_uplift": 0.0,
+      "rows": 180,
+      "segment_type": "product_id",
+      "segment_value": "P0002"
+    },
+    {
+      "censored_rows": 0,
+      "censoring_rate": 0.0,
+      "mean_latent_demand_estimate": 12.255555555555556,
+      "mean_observed_sales": 12.255555555555556,
+      "mean_uplift": 0.0,
+      "rows": 180,
+      "segment_type": "product_id",
+      "segment_value": "P0003"
+    },
+    {
+      "censored_rows": 0,
+      "censoring_rate": 0.0,
+      "mean_latent_demand_estimate": 6.3375,
+      "mean_observed_sales": 6.3375,
+      "mean_uplift": 0.0,
+      "rows": 720,
+      "segment_type": "shelf_life_band",
+      "segment_value": "long"
+    },
+    {
+      "censored_rows": 0,
+      "censoring_rate": 0.0,
+      "mean_latent_demand_estimate": 5.816666666666666,
+      "mean_observed_sales": 5.816666666666666,
+      "mean_uplift": 0.0,
+      "rows": 360,
+      "segment_type": "store_id",
+      "segment_value": "S000"
+    },
+    {
+      "censored_rows": 0,
+      "censoring_rate": 0.0,
+      "mean_latent_demand_estimate": 6.858333333333333,
+      "mean_observed_sales": 6.858333333333333,
+      "mean_uplift": 0.0,
+      "rows": 360,
+      "segment_type": "store_id",
+      "segment_value": "S001"
+    }
+  ],
   "conformal_adjustment": 0.0,
-  "empirical_coverage": 0.928763440860215,
-  "mean_interval_width": 16.260897988211447,
-  "pinball_loss": {
-    "q05": 0.39360756178617673,
-    "q10": 0.6215202827354096,
-    "q50": 1.8273094692350325,
-    "q90": 0.9867704716033487,
-    "q95": 0.6154271200744188
+  "demand_censoring": {
+    "censored_rows": 0,
+    "converged": true,
+    "fallback_rows": 0,
+    "iterations": 1,
+    "mean_absolute_change": 0.0,
+    "method": "flag_exclude",
+    "rows": 720,
+    "training_rows_excluded": 0,
+    "training_weight_mean": 1.0
   },
-  "rows": 744,
-  "weighted_interval_score": 20.1806936372119
+  "empirical_coverage": 0.8942307692307693,
+  "mean_interval_width": 11.549498851013826,
+  "pinball_loss": {
+    "q05": 0.2889423076923077,
+    "q10": 0.5778846153846154,
+    "q50": 1.5928433294896323,
+    "q90": 0.8402732936197501,
+    "q95": 0.5446439930324762
+  },
+  "rows": 104,
+  "weighted_interval_score": 16.67172601449567
 }

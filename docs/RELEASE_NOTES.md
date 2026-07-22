@@ -1,5 +1,29 @@
 # Release Notes
 
+## v0.2.0
+
+Demand contracts now distinguish observed sales from demand signals that may be censored by availability.
+
+### Added
+
+- Canonical daily rows include `is_censored_demand`, `censoring_reason`, `observed_inventory`, `late_stock_snapshot`, `stockout_flag`, latent-demand estimates, bounds, provenance, and training weights.
+- Forecast training accepts row weights so censored rows can be included, excluded, or down-weighted by configuration.
+- Demo forecast metrics include censored-row diagnostics and segment summaries by store, product, demand-volume band, and shelf-life band.
+
+### Changed
+
+- The demo target is the configured latent-demand estimate instead of raw observed sales.
+- Feature selection keeps censoring/provenance columns in the modelling frame for audit while excluding them from model inputs.
+- Release evidence now includes the root roadmap and a `v0.2.0` gate report.
+
+### Migration
+
+Existing input frames without the new censoring columns continue to be treated as uncensored. Source adapters that provide stock snapshots can now populate availability-aware canonical fields.
+
+### Known limitations
+
+The censored-demand path is deterministic and conservative. It surfaces and controls stockout-biased rows, but retailer-specific lost-sales behavior still requires operational validation.
+
 ## v0.1.0
 
 Initial reproducible release of the perishable inventory decision lab.

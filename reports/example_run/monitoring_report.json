@@ -1,15 +1,16 @@
 {
+  "alert_details": [],
   "alerts": [],
   "data": {
-    "demand_p99": 37.0,
+    "demand_p99": 21.909999999999997,
     "duplicate_key_rate": 0.0,
     "maximum_missing_rate": 0.0,
-    "rows": 744
+    "rows": 104
   },
   "forecast": {
-    "approximate_crps": 1.7778539621737544,
-    "empirical_coverage": 0.928763440860215,
-    "mean_interval_width": 16.260897988211447
+    "approximate_crps": 1.5378350156875125,
+    "empirical_coverage": 0.8942307692307693,
+    "mean_interval_width": 11.549498851013826
   },
   "status": "healthy"
 }

@@ -17,6 +17,18 @@ def test_demo_pipeline_writes_expected_outputs(tmp_path: Path) -> None:
     assert (tmp_path / "policy_metrics.csv").exists()
     assert (tmp_path / "evaluation_report.json").exists()
     assert result["forecast_metrics"]["rows"] > 0
+    assert result["forecast_metrics"]["demand_censoring"]["method"] == "flag_exclude"
+    assert result["forecast_metrics"]["demand_censoring"]["censored_rows"] == 0
+    assert result["forecast_metrics"]["demand_censoring"]["training_weight_mean"] == 1.0
+    assert {
+        "store_id",
+        "product_id",
+        "demand_volume_band",
+        "shelf_life_band",
+    } <= {
+        segment["segment_type"]
+        for segment in result["forecast_metrics"]["censoring_segments"]
+    }
 
     forecasts = pd.read_csv(tmp_path / "forecast_predictions.csv")
     policies = pd.read_csv(tmp_path / "policy_metrics.csv")

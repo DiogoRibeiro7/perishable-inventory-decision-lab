@@ -28,12 +28,27 @@ class QuantileForecaster:
     models: dict[float, Pipeline] = field(default_factory=dict, init=False)
     columns_: tuple[str, ...] | None = field(default=None, init=False)
 
-    def fit(self, features: pd.DataFrame, target: pd.Series) -> QuantileForecaster:
+    def fit(
+        self,
+        features: pd.DataFrame,
+        target: pd.Series,
+        sample_weight: pd.Series | NDArray[np.floating[Any]] | None = None,
+    ) -> QuantileForecaster:
         """Fit all quantile models."""
         if features.empty:
             raise ValueError("Features cannot be empty")
         if len(features) != len(target):
             raise ValueError("Features and target must have equal length")
+        fit_params: dict[str, NDArray[np.float64]] = {}
+        if sample_weight is not None:
+            weights = np.asarray(sample_weight, dtype=np.float64)
+            if len(weights) != len(target):
+                raise ValueError("Sample weights and target must have equal length")
+            if np.any(weights < 0.0):
+                raise ValueError("Sample weights cannot be negative")
+            if not np.any(weights > 0.0):
+                raise ValueError("At least one sample weight must be positive")
+            fit_params["regressor__sample_weight"] = weights
 
         self.columns_ = tuple(features.columns)
         self.models.clear()
@@ -53,7 +68,7 @@ class QuantileForecaster:
                     ("regressor", regressor),
                 ]
             )
-            pipeline.fit(features, target)
+            pipeline.fit(features, target, **fit_params)
             self.models[quantile] = pipeline
         return self
 

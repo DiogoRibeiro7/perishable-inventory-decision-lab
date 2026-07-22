@@ -17,6 +17,11 @@ from perishable_lab import __version__
 from perishable_lab.config import AppConfig
 from perishable_lab.data.synthetic import SyntheticDataSpec, generate_daily_demand
 from perishable_lab.data.validation import validate_daily_demand
+from perishable_lab.demand_censoring import (
+    CensoringResult,
+    build_censoring_diagnostic_report,
+    select_censoring_strategy,
+)
 from perishable_lab.evaluation.reporting import build_evaluation_report
 from perishable_lab.evaluation.splits import three_way_temporal_split
 from perishable_lab.features import TARGET_COLUMN, build_features, feature_columns
@@ -47,6 +52,24 @@ def _config_hash(config: AppConfig) -> str:
     """Return a stable hash for the validated runtime configuration."""
     serialized = config.model_dump_json()
     return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+
+
+def _with_censoring_segments(frame: pd.DataFrame) -> pd.DataFrame:
+    """Add compact segment labels for censoring diagnostics."""
+    segmented = frame.copy()
+    demand = pd.to_numeric(segmented["latent_demand_estimate"], errors="coerce")
+    segmented["demand_volume_band"] = pd.cut(
+        demand.rank(method="average", pct=True),
+        bins=[0.0, 1.0 / 3.0, 2.0 / 3.0, 1.0],
+        labels=["low", "medium", "high"],
+        include_lowest=True,
+    ).astype(str)
+    segmented["shelf_life_band"] = pd.cut(
+        pd.to_numeric(segmented["shelf_life_days"], errors="coerce"),
+        bins=[-float("inf"), 2.0, 5.0, float("inf")],
+        labels=["short", "medium", "long"],
+    ).astype(str)
+    return segmented
 
 
 def _with_run_metadata(
@@ -84,6 +107,16 @@ def run_demo(config: AppConfig, output_dir: Path) -> dict[str, Any]:
     validation = validate_daily_demand(raw)
     if not validation.is_valid:
         raise ValueError(f"Generated data failed validation: {validation.errors}")
+    censoring_strategy = select_censoring_strategy(
+        config.demand_censoring.method,
+        min_history=config.demand_censoring.min_history,
+        max_iterations=config.demand_censoring.max_iterations,
+        tolerance=config.demand_censoring.tolerance,
+    )
+    censoring_result = censoring_strategy.adjust(raw)
+    raw = censoring_result.frame.copy()
+    raw["demand"] = pd.to_numeric(raw["latent_demand_estimate"], errors="coerce")
+    raw = _with_censoring_segments(raw)
     raw.to_csv(output_dir / "synthetic_daily_demand.csv", index=False)
 
     featured = build_features(raw)
@@ -98,7 +131,16 @@ def run_demo(config: AppConfig, output_dir: Path) -> dict[str, Any]:
         min_samples_leaf=config.forecasting.min_samples_leaf,
         random_state=config.simulation.seed,
     )
-    model.fit(featured.loc[split.train, columns], featured.loc[split.train, TARGET_COLUMN])
+    training_weight = (
+        featured.loc[split.train, "latent_demand_training_weight"]
+        if "latent_demand_training_weight" in featured.columns
+        else None
+    )
+    model.fit(
+        featured.loc[split.train, columns],
+        featured.loc[split.train, TARGET_COLUMN],
+        sample_weight=training_weight,
+    )
 
     calibration_predictions = model.predict(featured.loc[split.calibration, columns])
     lower_column = quantile_column(config.forecasting.quantiles[0])
@@ -160,6 +202,18 @@ def run_demo(config: AppConfig, output_dir: Path) -> dict[str, Any]:
         config.forecasting.quantiles,
     )
     forecast_metrics["conformal_adjustment"] = calibrator.adjustment
+    censoring_diagnostics = asdict(censoring_result.diagnostics)
+    censoring_diagnostics["training_rows_excluded"] = int(
+        (pd.to_numeric(featured.loc[split.train, "latent_demand_training_weight"], errors="coerce") == 0.0).sum()
+    )
+    censoring_diagnostics["training_weight_mean"] = float(
+        pd.to_numeric(featured.loc[split.train, "latent_demand_training_weight"], errors="coerce").mean()
+    )
+    forecast_metrics["demand_censoring"] = censoring_diagnostics
+    forecast_metrics["censoring_segments"] = build_censoring_diagnostic_report(
+        CensoringResult(frame=raw, diagnostics=censoring_result.diagnostics),
+        segment_columns=("store_id", "product_id", "demand_volume_band", "shelf_life_band"),
+    ).to_dict(orient="records")
     _write_json(output_dir / "forecast_metrics.json", forecast_metrics)
 
     simulation_input = pd.concat(

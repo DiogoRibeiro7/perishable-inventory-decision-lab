@@ -4,9 +4,30 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_bool_dtype, is_numeric_dtype
 
 IDENTIFIER_COLUMNS = ["date", "store_id", "product_id"]
 TARGET_COLUMN = "demand"
+NON_FEATURE_COLUMNS = {
+    *IDENTIFIER_COLUMNS,
+    TARGET_COLUMN,
+    "unit_cost",
+    "unit_margin",
+    "waste_cost",
+    "observed_sales",
+    "source_product_ids",
+    "observed_inventory",
+    "stockout_observed",
+    "stockout_flag",
+    "late_stock_snapshot",
+    "is_censored_demand",
+    "censoring_reason",
+    "latent_demand_estimate",
+    "latent_demand_lower",
+    "latent_demand_upper",
+    "latent_demand_provenance",
+    "latent_demand_training_weight",
+}
 
 
 def build_features(frame: pd.DataFrame) -> pd.DataFrame:
@@ -56,5 +77,9 @@ def build_features(frame: pd.DataFrame) -> pd.DataFrame:
 
 def feature_columns(frame: pd.DataFrame) -> list[str]:
     """Return model feature names in deterministic order."""
-    excluded = set((*IDENTIFIER_COLUMNS, TARGET_COLUMN, "unit_cost", "unit_margin", "waste_cost"))
-    return sorted(column for column in frame.columns if column not in excluded)
+    return sorted(
+        column
+        for column in frame.columns
+        if column not in NON_FEATURE_COLUMNS
+        and (is_numeric_dtype(frame[column]) or is_bool_dtype(frame[column]))
+    )

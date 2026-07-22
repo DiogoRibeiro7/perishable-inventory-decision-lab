@@ -22,6 +22,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_PATHS = (
     Path("README.md"),
+    Path("ROADMAP.md"),
     Path("CITATION.cff"),
     Path("CODE_OF_CONDUCT.md"),
     Path("CONTRIBUTING.md"),
@@ -55,6 +56,7 @@ REQUIRED_PATHS = (
     Path("reports/example_run/policy_metrics.csv"),
     Path("reports/example_run/monitoring_report.json"),
     Path("reports/release/v0.1.0_commands.md"),
+    Path("reports/release/v0.2.0_commands.md"),
 )
 
 CARD_PATHS = (
