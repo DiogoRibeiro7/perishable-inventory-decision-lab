@@ -4,6 +4,8 @@ A production-oriented Python project for **probabilistic demand forecasting, per
 
 Fresh-food ordering is a decision problem under uncertainty. A store can lose sales by under-ordering, create waste by over-ordering, or make a good forecast unusable by ignoring shelf life, lead time, supplier constraints, and noisy stock records. This repository models that full decision loop rather than stopping at a forecasting notebook.
 
+For a portfolio-style technical narrative, see [`docs/PORTFOLIO_CASE_STUDY.md`](docs/PORTFOLIO_CASE_STUDY.md). The case study explains the modelling choices, failure modes, production controls, and first 90 days of retailer validation without treating synthetic results as commercial impact.
+
 ## What It Does
 
 For each `date x store_id x product_id`, the system:
