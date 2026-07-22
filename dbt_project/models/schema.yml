@@ -41,6 +41,23 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns: [business_date, store_id, product_id, feature_set_version]
 
+  - name: fct_dashboard_daily
+    description: Store-product-day semantic layer for operational dashboards.
+    columns:
+      - name: business_date
+        tests: [not_null]
+      - name: store_id
+        tests: [not_null]
+      - name: product_id
+        tests: [not_null]
+      - name: recommended_order_quantity
+        tests: [not_null]
+      - name: recommendation_count
+        tests: [not_null]
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [business_date, store_id, product_id]
+
   - name: stg_product_identity_mappings
     description: Validated slowly changing product-identity mappings.
     columns:
