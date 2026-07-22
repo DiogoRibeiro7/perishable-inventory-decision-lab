@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: stg_daily_demand
+    description: Validated store-product-day demand and unit economics.
+    columns:
+      - name: date
+        tests: [not_null]
+      - name: store_id
+        tests: [not_null]
+      - name: product_id
+        tests: [not_null]
+      - name: demand
+        tests: [not_null]
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [date, store_id, product_id]
+
+  - name: fct_daily_order_decisions
+    description: Versioned forecast distributions and order recommendations.
+    columns:
+      - name: decision_date
+        tests: [not_null]
+      - name: recommended_order_quantity
+        tests: [not_null]

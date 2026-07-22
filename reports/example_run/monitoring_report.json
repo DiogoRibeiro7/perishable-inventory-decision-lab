@@ -1,0 +1,15 @@
+{
+  "alerts": [],
+  "data": {
+    "demand_p99": 37.0,
+    "duplicate_key_rate": 0.0,
+    "maximum_missing_rate": 0.0,
+    "rows": 744
+  },
+  "forecast": {
+    "approximate_crps": 1.7778539621737544,
+    "empirical_coverage": 0.928763440860215,
+    "mean_interval_width": 16.260897988211447
+  },
+  "status": "healthy"
+}

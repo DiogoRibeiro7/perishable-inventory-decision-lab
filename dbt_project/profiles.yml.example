@@ -1,0 +1,10 @@
+perishable_lab:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('GCP_PROJECT_ID') }}"
+      dataset: "{{ env_var('BIGQUERY_DATASET', 'perishable_lab') }}"
+      location: EU
+      threads: 4

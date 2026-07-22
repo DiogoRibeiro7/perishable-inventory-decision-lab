@@ -1,0 +1,22 @@
+name: perishable_lab
+version: 1.0.0
+config-version: 2
+
+profile: perishable_lab
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  perishable_lab:
+    staging:
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: view
+      +schema: intermediate
+    marts:
+      +materialized: incremental
+      +schema: marts

@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: raw_retail
+    database: "{{ env_var('GCP_PROJECT_ID') }}"
+    schema: raw_retail
+    tables:
+      - name: daily_sales
+      - name: inventory_snapshots
+      - name: waste_events
+      - name: product_master
+      - name: promotions
+      - name: scoring_outputs

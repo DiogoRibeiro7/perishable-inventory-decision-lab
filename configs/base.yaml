@@ -1,0 +1,22 @@
+simulation:
+  days: 240
+  stores: 5
+  products: 16
+  seed: 42
+
+forecasting:
+  quantiles: [0.05, 0.1, 0.5, 0.9, 0.95]
+  max_iter: 120
+  learning_rate: 0.08
+  max_leaf_nodes: 24
+  min_samples_leaf: 20
+
+inventory:
+  service_level: 0.9
+  holding_cost_per_unit_day: 0.03
+  default_lead_time_days: 1
+
+monitoring:
+  minimum_coverage: 0.75
+  maximum_missing_rate: 0.02
+  maximum_pinball_degradation: 0.20
