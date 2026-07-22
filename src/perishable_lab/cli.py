@@ -13,6 +13,7 @@ import yaml
 from perishable_lab.analysis import ProfileConfig, write_profile_report
 from perishable_lab.config import load_config
 from perishable_lab.data.synthetic import SyntheticDataSpec, generate_daily_demand
+from perishable_lab.failures import DiagnosticMode, write_failure_analysis
 from perishable_lab.feature_store import (
     FeatureMetadata,
     FeatureRegistry,
@@ -136,6 +137,30 @@ def profile_data(
             indent=2,
         )
     )
+
+
+@app.command("diagnose-failures")
+def diagnose_failures_command(
+    input_path: Annotated[
+        Path,
+        typer.Argument(help="CSV file containing forecasts, recommendations, outcomes, and context signals."),
+    ],
+    output_dir: Annotated[
+        Path,
+        typer.Option(help="Directory in which failure diagnostics are written."),
+    ] = Path("artifacts/failure-analysis"),
+    mode: Annotated[
+        str,
+        typer.Option(help="Diagnostic mode: real_time or post_outcome."),
+    ] = "post_outcome",
+) -> None:
+    """Write row-level failures, episodes, and a ranked diagnostic report."""
+    if mode not in {"real_time", "post_outcome"}:
+        raise typer.BadParameter("mode must be real_time or post_outcome")
+    checked_mode: DiagnosticMode = "real_time" if mode == "real_time" else "post_outcome"
+    frame = pd.read_csv(input_path)
+    outputs = write_failure_analysis(frame, output_dir, mode=checked_mode)
+    typer.echo(json.dumps(outputs, indent=2, sort_keys=True))
 
 
 @app.command("snapshot-features")
