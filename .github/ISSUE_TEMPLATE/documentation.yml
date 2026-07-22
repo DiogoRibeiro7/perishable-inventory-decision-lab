@@ -1,0 +1,47 @@
+name: Documentation issue
+description: Report unclear, stale, missing, or inconsistent documentation.
+title: "docs: "
+labels:
+  - documentation
+body:
+  - type: textarea
+    id: location
+    attributes:
+      label: Location
+      description: Link the file or section that needs attention.
+      placeholder: README.md, docs/MODEL_CARD.md, reports/example_results.md
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: Issue
+      description: What is unclear, stale, missing, or inconsistent?
+    validations:
+      required: true
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Suggested wording or structure
+      description: Optional draft text or outline.
+    validations:
+      required: false
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Audience
+      options:
+        - Reviewer
+        - User running the demo
+        - Maintainer
+        - Hiring discussion
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submit checks
+      options:
+        - label: I checked the README and related docs for existing coverage.
+          required: true
