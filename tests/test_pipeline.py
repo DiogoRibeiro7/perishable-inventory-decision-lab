@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pandas as pd
+
 from perishable_lab.config import AppConfig, ForecastConfig, SimulationConfig
 from perishable_lab.pipelines.demo import run_demo
 
@@ -14,3 +16,14 @@ def test_demo_pipeline_writes_expected_outputs(tmp_path: Path) -> None:
     assert (tmp_path / "forecast_metrics.json").exists()
     assert (tmp_path / "policy_metrics.csv").exists()
     assert result["forecast_metrics"]["rows"] > 0
+
+    forecasts = pd.read_csv(tmp_path / "forecast_predictions.csv")
+    policies = pd.read_csv(tmp_path / "policy_metrics.csv")
+
+    for column in ("generated_at_utc", "config_hash", "model_version"):
+        assert column in forecasts.columns
+        assert column in policies.columns
+
+    assert "policy_version" in policies.columns
+    assert forecasts["config_hash"].nunique() == 1
+    assert policies["policy_version"].nunique() == 3

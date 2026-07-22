@@ -6,11 +6,16 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+from numpy.typing import NDArray
 
 from perishable_lab.forecasting.quantile import quantile_column
 
 
-def pinball_loss(y_true: np.ndarray, y_pred: np.ndarray, quantile: float) -> float:
+def pinball_loss(
+    y_true: NDArray[np.float64],
+    y_pred: NDArray[np.float64],
+    quantile: float,
+) -> float:
     """Return mean quantile loss."""
     error = y_true - y_pred
     return float(np.mean(np.maximum(quantile * error, (quantile - 1.0) * error)))
