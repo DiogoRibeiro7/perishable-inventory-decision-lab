@@ -11,7 +11,7 @@ authors:
 version: "0.1.0"
 date-released: "2026-07-22"
 doi: "10.5281/zenodo.21494115"
-license: "MIT"
+license: "Apache-2.0"
 repository-code: "https://github.com/DiogoRibeiro7/perishable-inventory-decision-lab"
 keywords:
   - "probabilistic forecasting"
