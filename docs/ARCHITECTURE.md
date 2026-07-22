@@ -34,6 +34,8 @@ The calibration set follows the training period and precedes the test period. A 
 
 Inventory is represented as FIFO cohorts with remaining shelf life. Deliveries enter after a product-specific lead time. Physical stock is reduced by sales, expiry, and stochastic shrinkage. The policy observes a noisy stock record rather than the true state.
 
+The simulator records the daily event sequence and can enforce case packs, minimum order quantities, storage capacity, supplier fill rates, and stochastic lead-time extensions. Default controls preserve the unconstrained local demo.
+
 ### Decision policy
 
 The policy receives a forecast target, observed stock, stock in transit, lead time, and shelf life. The default policy orders up to a demand quantile. The economic policy derives the quantile from the newsvendor critical fractile.
