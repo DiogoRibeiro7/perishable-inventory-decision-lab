@@ -8,6 +8,7 @@ from typing import Annotated
 
 import pandas as pd
 import typer
+import yaml
 
 from perishable_lab.analysis import ProfileConfig, write_profile_report
 from perishable_lab.config import load_config
@@ -17,6 +18,13 @@ from perishable_lab.feature_store import (
     FeatureRegistry,
     source_partition_manifest,
     write_training_snapshot_manifest,
+)
+from perishable_lab.performance import (
+    PerformanceBudget,
+    assert_budget,
+    default_workloads,
+    run_benchmark,
+    write_benchmark_report,
 )
 from perishable_lab.pipelines.demo import run_demo
 from perishable_lab.publication import (
@@ -228,6 +236,37 @@ def rollback_recommendations(
     """Roll back local recommendations to the previous valid batch."""
     pointer = LocalRecommendationStore(store_path).rollback()
     typer.echo(json.dumps({"status": "rolled_back", "batch_id": pointer.active_batch_id, "generation": pointer.generation}, indent=2))
+
+
+@app.command("benchmark")
+def benchmark(
+    output_dir: Annotated[
+        Path,
+        typer.Option(help="Directory in which benchmark reports are written."),
+    ] = Path("artifacts/benchmark"),
+    workload: Annotated[
+        str,
+        typer.Option(help="Workload name from small, medium, large, sparse, promotion_heavy."),
+    ] = "small",
+    budget_path: Annotated[
+        Path | None,
+        typer.Option(help="Optional YAML file with benchmark regression thresholds."),
+    ] = Path("configs/performance_budget.example.yaml"),
+    fail_on_budget: Annotated[
+        bool,
+        typer.Option(help="Exit with failure when the benchmark exceeds the configured budget."),
+    ] = False,
+) -> None:
+    """Run a local benchmark workload and write a profiler report."""
+    workloads = {spec.name: spec for spec in default_workloads()}
+    if workload not in workloads:
+        raise typer.BadParameter(f"Unknown workload: {workload}")
+    report = run_benchmark(workloads[workload])
+    report_path = write_benchmark_report(report, output_dir)
+    if fail_on_budget and budget_path is not None:
+        budget_payload = yaml.safe_load(budget_path.read_text(encoding="utf-8"))
+        assert_budget(report, PerformanceBudget(**budget_payload[workload]))
+    typer.echo(json.dumps({"output_path": str(report_path), "dominant_bottleneck": report["dominant_bottleneck"]}, indent=2))
 
 
 if __name__ == "__main__":

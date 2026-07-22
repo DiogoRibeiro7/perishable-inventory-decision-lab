@@ -30,6 +30,8 @@ jobs:
         run: poetry run mypy src
       - name: Test
         run: poetry run pytest
+      - name: Small benchmark
+        run: poetry run perishable-lab benchmark --workload small --output-dir artifacts/benchmark-ci --fail-on-budget
 
   container:
     runs-on: ubuntu-latest
