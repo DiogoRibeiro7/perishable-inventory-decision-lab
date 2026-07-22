@@ -4,7 +4,10 @@ version = "0.1.0"
 description = "Probabilistic forecasting and perishable inventory decision system"
 authors = ["Diogo"]
 readme = "README.md"
-packages = [{ include = "perishable_lab", from = "src" }]
+packages = [
+    { include = "perishable_lab", from = "src" },
+    { include = "case_study" },
+]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
