@@ -2,6 +2,7 @@ substitutions:
   _REGION: europe-west1
   _REPOSITORY: ml-images
   _IMAGE: perishable-inventory-decision-lab
+  _SERVICE_ACCOUNT: perishable-lab-runner
 
 steps:
   - name: python:3.12-slim
@@ -39,6 +40,8 @@ steps:
       - --tasks=1
       - --max-retries=2
       - --task-timeout=3600s
+      - --service-account=${_SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com
+      - --set-env-vars=IMAGE_TAG=${SHORT_SHA}
 
 images:
   - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE}:${SHORT_SHA}

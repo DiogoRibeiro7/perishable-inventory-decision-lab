@@ -11,3 +11,5 @@ The core demo is local and cloud-agnostic. A production implementation can use:
 - **Cloud Monitoring** for job failures and custom operational metrics.
 
 The supplied Cloud Build file tests the package, builds the container, pushes it to Artifact Registry, and deploys a Cloud Run Job. Production credentials should use workload identity and least-privilege service accounts; no long-lived service-account key should be committed.
+
+See [`DEPLOYMENT_RUNBOOK.md`](DEPLOYMENT_RUNBOOK.md) for idempotent partition publication, validation, rollback, and workload-identity guidance.
