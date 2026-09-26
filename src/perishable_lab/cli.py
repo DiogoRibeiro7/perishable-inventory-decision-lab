@@ -6,7 +6,6 @@ import json
 from pathlib import Path
 from typing import Annotated
 
-import pandas as pd
 import typer
 import yaml
 
@@ -22,6 +21,7 @@ from perishable_lab.feature_store import (
     write_training_snapshot_manifest,
 )
 from perishable_lab.forecasting.research import ResearchExperimentConfig, run_research_comparison
+from perishable_lab.io import loading, read_csv
 from perishable_lab.performance import (
     PerformanceBudget,
     assert_budget,
@@ -119,7 +119,7 @@ def profile_data(
         )
         source_table = "synthetic_daily_demand"
     else:
-        frame = pd.read_csv(input_path)
+        frame = read_csv(input_path)
         source_table = input_path.stem
 
     result = write_profile_report(
@@ -160,7 +160,7 @@ def diagnose_failures_command(
     if mode not in {"real_time", "post_outcome"}:
         raise typer.BadParameter("mode must be real_time or post_outcome")
     checked_mode: DiagnosticMode = "real_time" if mode == "real_time" else "post_outcome"
-    frame = pd.read_csv(input_path)
+    frame = read_csv(input_path)
     outputs = write_failure_analysis(frame, output_dir, mode=checked_mode)
     typer.echo(json.dumps(outputs, indent=2, sort_keys=True))
 
@@ -181,7 +181,7 @@ def snapshot_features(
     ] = "date",
 ) -> None:
     """Write a reproducible training feature snapshot manifest."""
-    frame = pd.read_csv(input_path)
+    frame = read_csv(input_path)
     partitions = tuple(column.strip() for column in partition_columns.split(",") if column.strip())
     registry = FeatureRegistry(
         tuple(
@@ -230,7 +230,7 @@ def publish_recommendations(
     now: Annotated[str, typer.Option()] = "2026-01-01T12:00:00Z",
 ) -> None:
     """Validate, stage, and atomically publish a local recommendation batch."""
-    frame = pd.read_csv(input_path)
+    frame = read_csv(input_path)
     request = BatchRequest(
         retailer_id=retailer_id,
         business_date=business_date,
@@ -291,7 +291,8 @@ def benchmark(
     report = run_benchmark(workloads[workload])
     report_path = write_benchmark_report(report, output_dir)
     if fail_on_budget and budget_path is not None:
-        budget_payload = yaml.safe_load(budget_path.read_text(encoding="utf-8"))
+        with loading(budget_path):
+            budget_payload = yaml.safe_load(budget_path.read_text(encoding="utf-8"))
         assert_budget(report, PerformanceBudget(**budget_payload[workload]))
     typer.echo(json.dumps({"output_path": str(report_path), "dominant_bottleneck": report["dominant_bottleneck"]}, indent=2))
 
@@ -341,7 +342,7 @@ def research_comparison(
     bootstrap_blocks: Annotated[int, typer.Option(min=20)] = 200,
 ) -> None:
     """Compare baseline and research-track probabilistic forecasters."""
-    frame = pd.read_csv(input_path)
+    frame = read_csv(input_path)
     outputs = run_research_comparison(
         frame,
         output_dir,

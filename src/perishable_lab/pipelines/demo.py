@@ -40,12 +40,13 @@ from perishable_lab.inventory.policies import (
     critical_fractile,
 )
 from perishable_lab.inventory.simulator import SimulationCosts, simulate_panel
+from perishable_lab.io import create_directory, write_csv, write_text
 from perishable_lab.monitoring.quality import build_monitoring_report
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     """Write a JSON document with stable formatting."""
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True, default=str), encoding="utf-8")
+    write_text(path, json.dumps(payload, indent=2, sort_keys=True, default=str))
 
 
 def _config_hash(config: AppConfig) -> str:
@@ -92,7 +93,7 @@ def _with_run_metadata(
 
 def run_demo(config: AppConfig, output_dir: Path) -> dict[str, Any]:
     """Run the complete showcase pipeline and persist its outputs."""
-    output_dir.mkdir(parents=True, exist_ok=True)
+    create_directory(output_dir)
     generated_at_utc = datetime.now(UTC).isoformat()
     config_hash = _config_hash(config)
     model_version = f"quantile_forecaster:{__version__}"
@@ -117,7 +118,7 @@ def run_demo(config: AppConfig, output_dir: Path) -> dict[str, Any]:
     raw = censoring_result.frame.copy()
     raw["demand"] = pd.to_numeric(raw["latent_demand_estimate"], errors="coerce")
     raw = _with_censoring_segments(raw)
-    raw.to_csv(output_dir / "synthetic_daily_demand.csv", index=False)
+    write_csv(raw, output_dir / "synthetic_daily_demand.csv")
 
     featured = build_features(raw)
     columns = feature_columns(featured)
@@ -194,7 +195,7 @@ def run_demo(config: AppConfig, output_dir: Path) -> dict[str, Any]:
         config_hash=config_hash,
         model_version=model_version,
     )
-    prediction_output.to_csv(output_dir / "forecast_predictions.csv", index=False)
+    write_csv(prediction_output, output_dir / "forecast_predictions.csv")
 
     forecast_metrics = evaluate_quantile_forecast(
         test[TARGET_COLUMN],
@@ -244,7 +245,7 @@ def run_demo(config: AppConfig, output_dir: Path) -> dict[str, Any]:
             model_version=model_version,
             policy_version=policy_version,
         )
-        daily.to_csv(output_dir / f"inventory_daily_{policy.name}.csv", index=False)
+        write_csv(daily, output_dir / f"inventory_daily_{policy.name}.csv")
         summary["generated_at_utc"] = generated_at_utc
         summary["config_hash"] = config_hash
         summary["model_version"] = model_version
@@ -286,7 +287,7 @@ def run_demo(config: AppConfig, output_dir: Path) -> dict[str, Any]:
         aggregate_policy_metrics["total_cost"]
         / aggregate_policy_metrics["demand_units"].clip(lower=1.0)
     )
-    aggregate_policy_metrics.to_csv(output_dir / "policy_metrics.csv", index=False)
+    write_csv(aggregate_policy_metrics, output_dir / "policy_metrics.csv")
 
     monitoring_report = build_monitoring_report(
         test,

@@ -20,6 +20,7 @@ from perishable_lab.forecasting.baselines import SeasonalNaiveQuantileForecaster
 from perishable_lab.forecasting.conformal import ConformalIntervalCalibrator
 from perishable_lab.forecasting.metrics import evaluate_quantile_forecast
 from perishable_lab.forecasting.quantile import QuantileForecaster, quantile_column
+from perishable_lab.io import create_directory, write_csv, write_text
 
 
 class ResearchForecaster(Protocol):
@@ -494,12 +495,12 @@ def _ablation_rows(
 
 
 def _write_research_outputs(outputs: dict[str, pd.DataFrame | dict[str, object]], output_dir: Path) -> None:
-    output_dir.mkdir(parents=True, exist_ok=True)
+    create_directory(output_dir)
     for name, payload in outputs.items():
         if isinstance(payload, pd.DataFrame):
-            payload.to_csv(output_dir / f"{name}.csv", index=False)
+            write_csv(payload, output_dir / f"{name}.csv")
         else:
-            (output_dir / f"{name}.json").write_text(json.dumps(payload, indent=2, sort_keys=True, default=str), encoding="utf-8")
+            write_text(output_dir / f"{name}.json", json.dumps(payload, indent=2, sort_keys=True, default=str))
 
 
 def _numeric_feature_columns(frame: pd.DataFrame) -> list[str]:

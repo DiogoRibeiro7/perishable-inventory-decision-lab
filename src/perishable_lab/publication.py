@@ -12,6 +12,7 @@ from typing import Literal, Protocol
 import pandas as pd
 
 from perishable_lab.feature_store import deterministic_frame_hash
+from perishable_lab.io import create_directory, loading, read_csv, write_csv, write_text, writing
 
 BatchStep = Literal[
     "train",
@@ -262,7 +263,7 @@ class LocalRecommendationStore:
         self.root = root
         self.batch_root = root / "batches"
         self.active_path = root / "active.json"
-        self.batch_root.mkdir(parents=True, exist_ok=True)
+        create_directory(self.batch_root)
 
     def stage_batch(self, frame: pd.DataFrame, request: BatchRequest, validation: ValidationReport) -> BatchManifest:
         """Stage recommendations idempotently after validation passes."""
@@ -278,8 +279,8 @@ class LocalRecommendationStore:
             if manifest.artifact_hash != artifact_hash:
                 raise PublicationConflictError("Existing batch id has different artifact contents")
             return manifest
-        batch_dir.mkdir(parents=True, exist_ok=True)
-        frame.sort_values(["business_date", "store_id", "product_id"]).to_csv(artifact_path, index=False)
+        create_directory(batch_dir)
+        write_csv(frame.sort_values(["business_date", "store_id", "product_id"]), artifact_path)
         manifest = BatchManifest(
             batch_id=batch_id,
             request=request,
@@ -326,7 +327,7 @@ class LocalRecommendationStore:
         pointer = self._read_active_pointer(required=True)
         assert pointer is not None
         self._assert_artifact_valid(pointer.active_batch_id)
-        return pd.read_csv(self._artifact_path(pointer.active_batch_id))
+        return read_csv(self._artifact_path(pointer.active_batch_id))
 
     def _artifact_path(self, batch_id: str) -> Path:
         return self.batch_root / batch_id / "recommendations.csv"
@@ -335,7 +336,9 @@ class LocalRecommendationStore:
         return self.batch_root / batch_id / "manifest.json"
 
     def _read_manifest(self, batch_id: str) -> BatchManifest:
-        payload = json.loads(self._manifest_path(batch_id).read_text(encoding="utf-8"))
+        manifest_path = self._manifest_path(batch_id)
+        with loading(manifest_path):
+            payload = json.loads(manifest_path.read_text(encoding="utf-8"))
         return BatchManifest(
             batch_id=payload["batch_id"],
             request=BatchRequest(**payload["request"]),
@@ -350,7 +353,8 @@ class LocalRecommendationStore:
             if required:
                 raise PublicationError("No active batch is published")
             return None
-        payload = json.loads(self.active_path.read_text(encoding="utf-8"))
+        with loading(self.active_path):
+            payload = json.loads(self.active_path.read_text(encoding="utf-8"))
         return ActivePointer(
             active_batch_id=payload["active_batch_id"],
             previous_batch_id=payload["previous_batch_id"],
@@ -362,7 +366,7 @@ class LocalRecommendationStore:
         artifact_path = self._artifact_path(batch_id)
         if not artifact_path.exists():
             raise CorruptedArtifactError("Recommendation artifact is missing")
-        frame = pd.read_csv(artifact_path)
+        frame = read_csv(artifact_path)
         if int(frame.shape[0]) != manifest.row_count or deterministic_frame_hash(frame) != manifest.artifact_hash:
             raise CorruptedArtifactError("Recommendation artifact does not match manifest")
 
@@ -449,8 +453,10 @@ def _manifest_to_dict(manifest: BatchManifest) -> dict[str, object]:
 
 def _write_json_atomic(path: Path, payload: dict[str, object]) -> None:
     tmp_path = path.with_suffix(f"{path.suffix}.tmp")
-    tmp_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
-    os.replace(tmp_path, path)
+    content = json.dumps(payload, indent=2, sort_keys=True)
+    write_text(tmp_path, content)
+    with writing(path):
+        os.replace(tmp_path, path)
 
 
 def _raise_columns(frame: pd.DataFrame, columns: list[str]) -> None:

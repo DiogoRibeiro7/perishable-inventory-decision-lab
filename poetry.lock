@@ -198,6 +198,18 @@ files = [
 toml = ["tomli ; python_full_version <= \"3.11.0a6\""]
 
 [[package]]
+name = "dataexcept"
+version = "1.7.0"
+description = "A Python package providing structured, easily-extendable custom exception types."
+optional = false
+python-versions = "<3.15,>=3.10"
+groups = ["main"]
+files = [
+    {file = "dataexcept-1.7.0-py3-none-any.whl", hash = "sha256:2032f07de4305e638e16227ae421fc85cd53ab30aec3433d8362ddb8e327bb39"},
+    {file = "dataexcept-1.7.0.tar.gz", hash = "sha256:62f15f59b2d41d873a6f6260be4d75baf9ba730da53626080590095cc7579ef6"},
+]
+
+[[package]]
 name = "distlib"
 version = "0.4.3"
 description = "Distribution utilities"
@@ -1410,4 +1422,4 @@ python-discovery = ">=1.4.2"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.13"
-content-hash = "2348865eca22be0d18c9e2655aad3b65c503e991529f20f31a2d19a7d3f5c312"
+content-hash = "b70738e3b7ea31e3ce53ff3c4a08f29d3f96e28ad5d6b50da0ad3834c4d931ab"

@@ -8,6 +8,7 @@ from pathlib import Path
 import pandas as pd
 
 from perishable_lab import __version__
+from perishable_lab.io import create_directory, write_csv, write_text
 
 REQUIRED_COLUMNS = ("date", "store_id", "product_id", "demand")
 BUSINESS_KEY = ("date", "store_id", "product_id")
@@ -505,7 +506,7 @@ def profile_daily_frame(
 
 
 def _write_csv(path: Path, frame: pd.DataFrame) -> None:
-    frame.to_csv(path, index=False, lineterminator="\n")
+    write_csv(frame, path, lineterminator="\n")
 
 
 def _markdown_report(result: ProfileResult) -> str:
@@ -550,11 +551,11 @@ def write_profile_report(
 ) -> ProfileResult:
     """Write deterministic profile tables and a Markdown report."""
     result = profile_daily_frame(frame, source_table=source_table, config=config)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    create_directory(output_dir)
     _write_csv(output_dir / "global_summary.csv", result.global_summary)
     _write_csv(output_dir / "segment_summary.csv", result.segment_summary)
     _write_csv(output_dir / "quality_issues.csv", result.quality_issues_frame())
     _write_csv(output_dir / "data_quality_rules.csv", result.data_quality_rules)
     _write_csv(output_dir / "chart_metadata.csv", result.chart_metadata_frame())
-    (output_dir / "profile_report.md").write_text(_markdown_report(result), encoding="utf-8")
+    write_text(output_dir / "profile_report.md", _markdown_report(result))
     return result

@@ -54,6 +54,11 @@ poetry run pytest
 
 The demo is deterministic for a fixed seed and runs end to end without cloud credentials.
 
+CSV, YAML, and model file failures raise DataExcept's `DataLoadingError`; artifact write
+failures raise `FileWriteError`. Both retain the failed path and original exception.
+A YAML document with the wrong root type raises `SchemaMismatchError`. Inventory
+validation and publication conflicts retain their existing domain errors.
+
 ## Citation
 
 Citation metadata is included in [`CITATION.cff`](CITATION.cff) and Zenodo metadata is included in [`.zenodo.json`](.zenodo.json). Cite all versions with DOI [`10.5281/zenodo.21494115`](https://doi.org/10.5281/zenodo.21494115).
