@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+from case_study.evaluator import evaluate_outputs
 from dataexcept import DataLoadingError, FileWriteError, SchemaMismatchError
 
-from case_study.evaluator import evaluate_outputs
 from perishable_lab.config import load_config
 from perishable_lab.data.adapters import LocalFileRetailAdapter
 from perishable_lab.forecasting.quantile import QuantileForecaster
