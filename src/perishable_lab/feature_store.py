@@ -13,6 +13,8 @@ from zoneinfo import ZoneInfo
 import numpy as np
 import pandas as pd
 
+from perishable_lab.io import create_directory, write_text
+
 NullPolicy = Literal["allow", "zero_fill", "forward_fill", "fail"]
 ParityStatus = Literal["pass", "fail"]
 
@@ -282,8 +284,9 @@ def write_training_snapshot_manifest(
 ) -> dict[str, object]:
     """Write a deterministic training snapshot manifest to disk."""
     manifest = freeze_training_snapshot(features, registry, source_manifest)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+    content = json.dumps(manifest, indent=2, sort_keys=True)
+    create_directory(output_path.parent)
+    write_text(output_path, content)
     return manifest
 
 

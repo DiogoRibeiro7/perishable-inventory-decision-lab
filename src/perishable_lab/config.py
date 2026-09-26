@@ -6,7 +6,10 @@ from pathlib import Path
 from typing import Any, Literal
 
 import yaml
+from dataexcept import SchemaMismatchError
 from pydantic import BaseModel, Field, field_validator
+
+from perishable_lab.io import loading
 
 
 class SimulationConfig(BaseModel):
@@ -102,12 +105,12 @@ def load_config(path: Path) -> AppConfig:
         Validated application configuration.
 
     Raises:
-        FileNotFoundError: If the file does not exist.
-        ValueError: If the YAML root is not a mapping.
+        DataLoadingError: If the file cannot be read or parsed.
+        SchemaMismatchError: If the YAML root is not a mapping.
     """
     raw: Any
-    with path.open("r", encoding="utf-8") as handle:
+    with loading(path), path.open("r", encoding="utf-8") as handle:
         raw = yaml.safe_load(handle)
     if not isinstance(raw, dict):
-        raise ValueError("Configuration root must be a mapping")
+        raise SchemaMismatchError("YAML mapping", type(raw).__name__)
     return AppConfig.model_validate(raw)

@@ -9,6 +9,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from perishable_lab.io import create_directory, write_csv, write_text
+
 
 @dataclass(frozen=True)
 class CaseStudySpec:
@@ -28,15 +30,15 @@ class CaseStudySpec:
 
 
 def _write_csv(frame: pd.DataFrame, path: Path) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    frame.to_csv(path, index=False)
+    create_directory(path.parent)
+    write_csv(frame, path)
 
 
 def generate_case_study_data(output_dir: Path, spec: CaseStudySpec | None = None) -> dict[str, str]:
     """Write exercise input files and evaluator-only truth to ``output_dir``."""
     effective_spec = spec or CaseStudySpec()
     rng = np.random.default_rng(effective_spec.seed)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    create_directory(output_dir)
 
     dates = pd.date_range(effective_spec.start_date, periods=effective_spec.days, freq="D")
     stores = [f"S{idx + 1:02d}" for idx in range(effective_spec.stores)]
@@ -197,8 +199,8 @@ def generate_case_study_data(output_dir: Path, spec: CaseStudySpec | None = None
     _write_csv(promo_frame, output_dir / files["promotions"])
     _write_csv(products_frame, output_dir / files["products"])
     _write_csv(pd.DataFrame(truth_rows), output_dir / files["truth"])
-    (output_dir / files["metadata"]).write_text(
+    write_text(
+        output_dir / files["metadata"],
         json.dumps({"spec": asdict(effective_spec), "files": files}, indent=2, sort_keys=True),
-        encoding="utf-8",
     )
     return {key: str(output_dir / value) for key, value in files.items()}

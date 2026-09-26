@@ -7,6 +7,8 @@ from typing import Any, Protocol, cast
 
 import pandas as pd
 
+from perishable_lab.io import read_csv, read_parquet
+
 
 class RetailTableAdapter(Protocol):
     """Protocol implemented by source systems that expose named tables."""
@@ -25,12 +27,10 @@ class LocalFileRetailAdapter:
     def read_table(self, table_name: str) -> pd.DataFrame:
         """Read a table from `<root>/<table_name>.<extension>`."""
         path = self.root / f"{table_name}.{self.extension}"
-        if not path.exists():
-            raise FileNotFoundError(path)
         if self.extension == "csv":
-            return pd.read_csv(path)
+            return read_csv(path)
         if self.extension == "parquet":
-            return pd.read_parquet(path)
+            return read_parquet(path)
         raise ValueError(f"Unsupported table extension: {self.extension}")
 
 

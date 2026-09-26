@@ -6,6 +6,9 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import pandas as pd
+from dataexcept import DataLoadingError
+
+from perishable_lab.io import loading, read_csv
 
 
 @dataclass(frozen=True)
@@ -55,9 +58,14 @@ def check_stock_conservation(metrics: dict[str, float], tolerance: float = 1e-9)
 
 def evaluate_outputs(data_dir: Path, submission_dir: Path) -> EvaluationResult:
     """Evaluate reference-style outputs against hidden truth."""
-    recommendations = pd.read_csv(submission_dir / "recommendations.csv")
-    metrics = pd.read_json(submission_dir / "metrics.json", typ="series").to_dict()
-    products = pd.read_csv(data_dir / "products.csv")
+    recommendations = read_csv(submission_dir / "recommendations.csv")
+    metrics_path = submission_dir / "metrics.json"
+    with loading(metrics_path):
+        try:
+            metrics = pd.read_json(metrics_path, typ="series").to_dict()
+        except ValueError as exc:
+            raise DataLoadingError(str(metrics_path), exc) from exc
+    products = read_csv(data_dir / "products.csv")
 
     checks = {
         "no_truth_leakage": check_no_truth_leakage(recommendations),

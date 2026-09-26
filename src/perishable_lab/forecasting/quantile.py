@@ -14,6 +14,8 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 
+from perishable_lab.io import loading, writing
+
 
 @dataclass
 class QuantileForecaster:
@@ -92,13 +94,13 @@ class QuantileForecaster:
         """Persist a fitted forecaster to disk."""
         if self.columns_ is None or not self.models:
             raise RuntimeError("The forecaster must be fitted before serialization")
-        with path.open("wb") as handle:
+        with writing(path), path.open("wb") as handle:
             pickle.dump(self, handle)
 
     @classmethod
     def load(cls, path: Path) -> QuantileForecaster:
         """Load a persisted forecaster from disk."""
-        with path.open("rb") as handle:
+        with loading(path), path.open("rb") as handle:
             loaded = pickle.load(handle)
         if not isinstance(loaded, cls):
             raise TypeError(f"Expected {cls.__name__}, got {type(loaded).__name__}")

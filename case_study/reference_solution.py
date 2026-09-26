@@ -13,17 +13,18 @@ from perishable_lab.inventory.policies import (
     PolicyContext,
     apply_ordering_constraints,
 )
+from perishable_lab.io import create_directory, read_csv, write_csv, write_text
 
 KEYS = ["date", "store_id", "product_id"]
 
 
 def _read_data(data_dir: Path) -> dict[str, pd.DataFrame]:
     return {
-        "sales": pd.read_csv(data_dir / "sales.csv", parse_dates=["date", "known_at"]),
-        "inventory": pd.read_csv(data_dir / "inventory_snapshots.csv", parse_dates=["date", "snapshot_time"]),
-        "prices": pd.read_csv(data_dir / "prices.csv", parse_dates=["date", "known_at"]),
-        "promotions": pd.read_csv(data_dir / "promotions.csv", parse_dates=["date", "known_at"]),
-        "products": pd.read_csv(data_dir / "products.csv"),
+        "sales": read_csv(data_dir / "sales.csv", parse_dates=["date", "known_at"]),
+        "inventory": read_csv(data_dir / "inventory_snapshots.csv", parse_dates=["date", "snapshot_time"]),
+        "prices": read_csv(data_dir / "prices.csv", parse_dates=["date", "known_at"]),
+        "promotions": read_csv(data_dir / "promotions.csv", parse_dates=["date", "known_at"]),
+        "products": read_csv(data_dir / "products.csv"),
     }
 
 
@@ -151,18 +152,18 @@ def _score_against_truth(
 
 def run_reference_solution(data_dir: Path, output_dir: Path) -> dict[str, Path]:
     """Run the baseline solution and write submission-style outputs."""
-    output_dir.mkdir(parents=True, exist_ok=True)
+    create_directory(output_dir)
     frame = build_training_frame(data_dir)
     train, test = _split_frame(frame)
     recommendations = _make_recommendations(train, test)
-    truth = pd.read_csv(data_dir / "evaluator_only" / "hidden_truth.csv")
-    products = pd.read_csv(data_dir / "products.csv")
+    truth = read_csv(data_dir / "evaluator_only" / "hidden_truth.csv")
+    products = read_csv(data_dir / "products.csv")
     truth = truth.loc[truth["date"].isin(recommendations["date"])]
     metrics = _score_against_truth(recommendations, truth, products)
 
-    recommendations.to_csv(output_dir / "recommendations.csv", index=False)
-    (output_dir / "metrics.json").write_text(json.dumps(metrics, indent=2, sort_keys=True), encoding="utf-8")
-    (output_dir / "audit_assumptions.md").write_text(_audit_text(frame), encoding="utf-8")
+    write_csv(recommendations, output_dir / "recommendations.csv")
+    write_text(output_dir / "metrics.json", json.dumps(metrics, indent=2, sort_keys=True))
+    write_text(output_dir / "audit_assumptions.md", _audit_text(frame))
     return {
         "recommendations": output_dir / "recommendations.csv",
         "metrics": output_dir / "metrics.json",

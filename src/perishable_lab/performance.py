@@ -16,6 +16,7 @@ import pandas as pd
 
 from perishable_lab.data.synthetic import SyntheticDataSpec, generate_daily_demand
 from perishable_lab.features import build_features
+from perishable_lab.io import create_directory, write_text
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -313,7 +314,7 @@ def assert_budget(report: dict[str, object], budget: PerformanceBudget) -> None:
 
 def write_benchmark_report(report: dict[str, object], output_dir: Path) -> Path:
     """Persist benchmark profiler output as stable JSON."""
-    output_dir.mkdir(parents=True, exist_ok=True)
+    create_directory(output_dir)
     output_path = output_dir / "benchmark_report.json"
-    output_path.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
+    write_text(output_path, json.dumps(report, indent=2, sort_keys=True))
     return output_path

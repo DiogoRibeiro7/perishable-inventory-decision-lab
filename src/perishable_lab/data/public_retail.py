@@ -20,6 +20,7 @@ from perishable_lab.forecasting.baselines import (
 from perishable_lab.forecasting.conformal import ConformalIntervalCalibrator
 from perishable_lab.forecasting.metrics import evaluate_quantile_forecast
 from perishable_lab.forecasting.quantile import QuantileForecaster
+from perishable_lab.io import create_directory, loading, read_csv, write_csv, write_text
 
 PublicDatasetName = Literal["m5"]
 
@@ -121,7 +122,7 @@ def data_access_instructions(dataset: PublicDatasetName = "m5") -> tuple[str, ..
 def sha256_file(path: Path) -> str:
     """Return the SHA-256 digest for a local file."""
     digest = hashlib.sha256()
-    with path.open("rb") as handle:
+    with loading(path), path.open("rb") as handle:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
@@ -157,7 +158,7 @@ def known_m5_leakage_fields(raw_dir: Path, *, allowed_last_day: int = 1913) -> t
             issues.append(pattern)
     sales_path = raw_dir / "sales_train_validation.csv"
     if sales_path.exists():
-        header = pd.read_csv(sales_path, nrows=0)
+        header = read_csv(sales_path, nrows=0)
         for column in header.columns:
             if column.startswith("d_"):
                 day_number = _day_number(column)
@@ -169,9 +170,9 @@ def known_m5_leakage_fields(raw_dir: Path, *, allowed_last_day: int = 1913) -> t
 def load_m5_canonical(config: M5AdapterConfig) -> pd.DataFrame:
     """Convert user-provided M5 files to a canonical daily demand panel."""
     validate_m5_files(config.raw_dir, config.expected_checksums)
-    sales = pd.read_csv(config.raw_dir / "sales_train_validation.csv")
-    calendar = pd.read_csv(config.raw_dir / "calendar.csv")
-    prices = pd.read_csv(config.raw_dir / "sell_prices.csv")
+    sales = read_csv(config.raw_dir / "sales_train_validation.csv")
+    calendar = read_csv(config.raw_dir / "calendar.csv")
+    prices = read_csv(config.raw_dir / "sell_prices.csv")
 
     day_columns = _selected_day_columns(sales, config.first_day, config.last_day)
     sampled_sales = _deterministic_series_sample(sales, max_series=config.max_series, seed=config.seed)
@@ -270,7 +271,7 @@ def run_public_retail_benchmark(
 ) -> dict[str, str]:
     """Run a small rolling-origin benchmark on user-provided M5 data."""
     effective_config = config or PublicBenchmarkConfig()
-    output_dir.mkdir(parents=True, exist_ok=True)
+    create_directory(output_dir)
     canonical = load_m5_canonical(
         M5AdapterConfig(
             raw_dir=raw_dir,
@@ -282,10 +283,11 @@ def run_public_retail_benchmark(
     metrics = _rolling_benchmark(canonical, effective_config)
     comparison = _synthetic_comparison(canonical)
 
-    canonical.head(500).to_csv(output_dir / "canonical_sample.csv", index=False)
-    completeness.to_csv(output_dir / "date_completeness.csv", index=False)
-    metrics.to_csv(output_dir / "forecast_metrics.csv", index=False)
-    (output_dir / "benchmark_manifest.json").write_text(
+    write_csv(canonical.head(500), output_dir / "canonical_sample.csv")
+    write_csv(completeness, output_dir / "date_completeness.csv")
+    write_csv(metrics, output_dir / "forecast_metrics.csv")
+    write_text(
+        output_dir / "benchmark_manifest.json",
         json.dumps(
             {
                 "dataset": "m5",
@@ -306,9 +308,8 @@ def run_public_retail_benchmark(
             sort_keys=True,
             default=str,
         ),
-        encoding="utf-8",
     )
-    (output_dir / "synthetic_comparison.md").write_text(comparison, encoding="utf-8")
+    write_text(output_dir / "synthetic_comparison.md", comparison)
     return {
         "canonical_sample": str(output_dir / "canonical_sample.csv"),
         "date_completeness": str(output_dir / "date_completeness.csv"),

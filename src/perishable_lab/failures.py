@@ -10,6 +10,8 @@ from typing import Literal, cast
 
 import pandas as pd
 
+from perishable_lab.io import create_directory, write_csv, write_text
+
 FailureCause = Literal[
     "missing_or_late_data",
     "product_mapping_error",
@@ -325,19 +327,13 @@ def write_failure_analysis(
     mode: DiagnosticMode = "post_outcome",
 ) -> dict[str, str]:
     """Write diagnostic records, ranked cohorts, and a Markdown report."""
-    output_dir.mkdir(parents=True, exist_ok=True)
+    create_directory(output_dir)
     row_records = diagnose_failures(frame, mode=mode)
     episode_records = build_episode_records(row_records)
-    records_to_frame(row_records).to_csv(output_dir / "failure_records.csv", index=False)
-    records_to_frame(episode_records).to_csv(output_dir / "failure_episodes.csv", index=False)
-    (output_dir / "top_failure_report.md").write_text(
-        build_top_failure_report(row_records),
-        encoding="utf-8",
-    )
-    (output_dir / "root_cause_workflow.json").write_text(
-        json.dumps(root_cause_workflow(), indent=2),
-        encoding="utf-8",
-    )
+    write_csv(records_to_frame(row_records), output_dir / "failure_records.csv")
+    write_csv(records_to_frame(episode_records), output_dir / "failure_episodes.csv")
+    write_text(output_dir / "top_failure_report.md", build_top_failure_report(row_records))
+    write_text(output_dir / "root_cause_workflow.json", json.dumps(root_cause_workflow(), indent=2))
     return {
         "records": str(output_dir / "failure_records.csv"),
         "episodes": str(output_dir / "failure_episodes.csv"),
@@ -372,11 +368,9 @@ def write_regression_fixture(
         & (frame["date"] >= selected.start_date)
         & (frame["date"] <= selected.end_date)
     ]
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(
-        json.dumps({"keys": keys, "rows": rows.to_dict(orient="records")}, indent=2, default=str),
-        encoding="utf-8",
-    )
+    content = json.dumps({"keys": keys, "rows": rows.to_dict(orient="records")}, indent=2, default=str)
+    create_directory(output_path.parent)
+    write_text(output_path, content)
     return output_path
 
 
