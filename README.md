@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/project-logo.png" alt="perishable-inventory-decision-lab project logo" width="160" height="160">
+</p>
+
 # Perishable Inventory Decision Lab
 
 [![CI](https://github.com/DiogoRibeiro7/perishable-inventory-decision-lab/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/DiogoRibeiro7/perishable-inventory-decision-lab/actions/workflows/ci.yml)
