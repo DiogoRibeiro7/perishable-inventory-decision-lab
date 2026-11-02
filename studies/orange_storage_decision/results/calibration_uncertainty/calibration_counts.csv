@@ -1,0 +1,4 @@
+"reference_per_class","day","true_positive","false_negative","true_negative","false_positive"
+50,10,45,5,45,5
+200,10,180,20,180,20
+1000,10,900,100,900,100

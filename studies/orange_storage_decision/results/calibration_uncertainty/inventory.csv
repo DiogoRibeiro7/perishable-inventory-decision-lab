@@ -1,0 +1,4 @@
+"cohort","mass_kg","initially_sellable","shape","scale"
+"advanced",425,TRUE,1,1
+"intermediate",425,TRUE,1,1
+"initially_immature",150,FALSE,1,1

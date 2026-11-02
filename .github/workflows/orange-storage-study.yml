@@ -1,0 +1,39 @@
+name: Orange Storage Study (R)
+
+on:
+  pull_request:
+    paths:
+      - "studies/orange_storage_decision/**"
+      - ".github/workflows/orange-storage-study.yml"
+  push:
+    branches: [main]
+    paths:
+      - "studies/orange_storage_decision/**"
+      - ".github/workflows/orange-storage-study.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  orange-study:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: studies/orange_storage_decision
+    steps:
+      - uses: actions/checkout@v7
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "release"
+      - name: Run all R study tests against committed synthetic evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test_file in tests/test_*.R; do
+            Rscript "$test_file"
+          done
+      - name: Run seeded orange storage demo
+        run: Rscript scripts/demo.R
+      - name: Exercise the contingent inspection report
+        run: Rscript scripts/run_adaptive_policy.R 20 "${RUNNER_TEMP}/orange-adaptive-policy"

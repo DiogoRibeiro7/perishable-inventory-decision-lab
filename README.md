@@ -14,6 +14,8 @@ A production-oriented Python project for **probabilistic demand forecasting, per
 
 Fresh-food ordering is a decision problem under uncertainty. A store can lose sales by under-ordering, create waste by over-ordering, or make a good forecast unusable by ignoring shelf life, lead time, supplier constraints, and noisy stock records. This repository models that full decision loop rather than stopping at a forecasting notebook.
 
+The repository also hosts an independent **[orange storage and sale-timing study](studies/orange_storage_decision/)** in base R. It asks when a mixed-maturity lot should be sold and whether another quality inspection is worth buying. It is a complementary decision-science experiment, **not an integrated component** of the Python replenishment pipeline.
+
 For a portfolio-style technical narrative, see [`docs/PORTFOLIO_CASE_STUDY.md`](docs/PORTFOLIO_CASE_STUDY.md). The case study explains the modelling choices, failure modes, production controls, and first 90 days of retailer validation without treating synthetic results as commercial impact.
 
 ## What It Does
@@ -124,7 +126,16 @@ gcp/               # Cloud Build, Cloud Run Job pattern, deployment runbook
 docs/              # Architecture, modelling choices, experiment plan, walkthroughs
 reports/           # Committed example metrics and figures
 tests/             # Unit and integration tests
+studies/           # Independent research studies (orange storage; base R)
 ```
+
+The orange study has its own [R instructions](studies/orange_storage_decision/README.md),
+[scientific protocol](studies/orange_storage_decision/PROTOCOL.md),
+[adaptive inspection extension](studies/orange_storage_decision/ADAPTIVE_POLICY.md),
+and [migration provenance](studies/orange_storage_decision/MIGRATION.md).
+Its historical synthetic result files remain in the study's `results/`
+directory. Its copied code retains the original [MIT notice](studies/orange_storage_decision/LICENSE);
+the main Python package remains Apache-2.0 licensed.
 
 ## Core Components
 
